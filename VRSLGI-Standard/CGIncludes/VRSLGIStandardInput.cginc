@@ -519,7 +519,7 @@ half3 DMXEmission(float2 uv)
 		#endif
 		emissTex = (emissTex * _FixtureMaxIntensity) * dmxColor.rgb * getGlobalIntensity() * getFinalIntensity() * _UniversalIntensity;
 //		emissTex = Filtering(emissTex, _HueEmiss, _SaturationEmiss, _BrightnessEmiss, _ContrastEmiss, 0);
-        emissTex = lerp(float3(0,0,0), emissTex, dmxIntensity);
+        emissTex = lerp(float3(0,0,0), emissTex, dmxIntensity * dmxIntensity * dmxIntensity);
 		return emissTex;
 	#else
 		return 0;
