@@ -1,10 +1,6 @@
     
 #define SCORE_MIN -1000
-#ifdef      _VRSL_GLOBALLIGHTTEXTURE
-    int lightCount = _Udon_VRSL_GI_LightTexture.Load( int3(0, 2, 0) ); 
-#else
-    int lightCount = _VRSL_LightTexture.Load( int3(0, 2, 0) );
-#endif
+int lightCount = _VRSL_LightTexture.Load( int3(0, 2, 0) ); 
 const float4 worldPostiion = o.meshWorldPos;
 
 float4 lightPositions[64];

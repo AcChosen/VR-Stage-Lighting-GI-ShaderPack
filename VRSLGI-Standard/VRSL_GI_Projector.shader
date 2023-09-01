@@ -5,7 +5,7 @@ Properties {
 	[Enum(GGX,0,Beckman,1,Blinn Phong,2)] _VRSLSpecularFunction ("VRSL Specular Function", Int) = 0
 
 
-	[ToggleOff] useVRSLGI("Use VRSL GI", Float) = 1.0
+	[ToggleOff] _VRSLGIToggle("Use VRSL GI", Float) = 1.0
 	[ToggleOff] useVRSLGISpecular("Use VRSL GI", Float) = 1.0
 	[Enum(Pixel Lighting (All),0,Vertex Lighting (Four),1)] _VRSLGIQuadLightingSystem("ZTest", Int) = 0
 	_VRSLGlossiness("VRSL Smoothness", Range(0, 1)) = 0.5
@@ -108,7 +108,7 @@ SubShader {
 		CGPROGRAM
 		#pragma target 5.0
 		#define VRSL_GI_PROJECTOR
-		#pragma shader_feature_local _ _VRSL_GI
+		#pragma shader_feature_local _ _VRSL_GI_ON
 		#pragma shader_feature_local _ _VRSL_GI_SPECULARHIGHLIGHTS
 		#pragma shader_feature _EMISSION
 		#pragma shader_feature_local _SPECULARHIGHLIGHTS_OFF

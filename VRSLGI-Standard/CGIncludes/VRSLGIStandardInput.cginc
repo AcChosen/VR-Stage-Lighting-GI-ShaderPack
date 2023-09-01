@@ -198,7 +198,7 @@ float4 TexCoords(VertexInput v)
     static float3 camera_pos = get_camera_pos_vrsl();
 #endif
 
-//#ifdef _VRSL_GI
+//#ifdef _VRSL_GI_ON
     float2 VRSLShadowMaskCoords(VertexInput v)
     {
         
@@ -319,7 +319,7 @@ half4 SpecularGloss(float2 uv)
     return sg;
 }
 
-#if defined(_VRSL_GI) && defined(_VRSL_GI_SPECULARHIGHLIGHTS) && !defined(_VRSL_MG_MAP) && !defined(VRSL_GI_PROJECTOR)
+#if defined(_VRSL_GI_ON) && defined(_VRSL_GI_SPECULARHIGHLIGHTS) && !defined(_VRSL_MG_MAP) && !defined(VRSL_GI_PROJECTOR)
     half4 MetallicGlossMap(float2 uv)
     {
         return tex2D(_MetallicGlossMap, uv);
@@ -519,7 +519,7 @@ half3 DMXEmission(float2 uv)
 		#endif
 		emissTex = (emissTex * _FixtureMaxIntensity) * dmxColor.rgb * getGlobalIntensity() * getFinalIntensity() * _UniversalIntensity;
 //		emissTex = Filtering(emissTex, _HueEmiss, _SaturationEmiss, _BrightnessEmiss, _ContrastEmiss, 0);
-        emissTex = lerp(float3(0,0,0), emissTex, dmxIntensity * dmxIntensity * dmxIntensity);
+        emissTex = lerp(float3(0,0,0), emissTex, dmxIntensity);
 		return emissTex;
 	#else
 		return 0;

@@ -187,7 +187,7 @@ struct FragmentCommonData
     half3 tangentSpaceNormal;
 #endif
 
-#if defined(_VRSL_GI) && defined(_VRSL_GI_SPECULARHIGHLIGHTS) && !defined(_VRSL_MG_MAP) && !defined(VRSL_GI_PROJECTOR)
+#if defined(_VRSL_GI_ON) && defined(_VRSL_GI_SPECULARHIGHLIGHTS) && !defined(_VRSL_MG_MAP) && !defined(VRSL_GI_PROJECTOR)
     half4 metallicGlossMap;
 #endif
 };
@@ -235,7 +235,7 @@ inline FragmentCommonData MetallicSetup (float4 i_tex)
 {
     FragmentCommonData o = (FragmentCommonData)0;
 
-    #if defined(_VRSL_GI) && defined(_VRSL_GI_SPECULARHIGHLIGHTS) && !defined(_VRSL_MG_MAP) && !defined(VRSL_GI_PROJECTOR)
+    #if defined(_VRSL_GI_ON) && defined(_VRSL_GI_SPECULARHIGHLIGHTS) && !defined(_VRSL_MG_MAP) && !defined(VRSL_GI_PROJECTOR)
         half4 mgm = MetallicGlossMap(i_tex.xy);
         half4 mainTex = float4(1,1,1,1);
         #ifdef _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
@@ -390,7 +390,7 @@ struct VertexOutputForwardBase
     #if VRSL_ENABLED
         nointerpolation float3 dmxColor       : TEXCOORD9;
     #endif
-    #ifdef _VRSL_GI
+    #ifdef _VRSL_GI_ON
        #ifndef VRSL_GI_PROJECTOR
             float2 shadowMaskUV                    : TEXCOORD10;
         #else
@@ -478,7 +478,7 @@ VertexOutputForwardBase vertForwardBase (VertexInput v)
     #if VRSL_ENABLED
         o.dmxColor = DMXEmission(o.tex.xy);
     #endif
-    #ifdef _VRSL_GI
+    #ifdef _VRSL_GI_ON
        #ifndef VRSL_GI_PROJECTOR
        o.shadowMaskUV = VRSLShadowMaskCoords(v);
        #else
@@ -540,7 +540,7 @@ half4 fragForwardBaseProj (VertexOutputForwardBase i, bool frontFace)
 	//c.rgb += Emission(i.tex.xy);
 	// c.rgb += (s.diffColor + s.specColor);
 
-    #if _VRSL_GI
+    #if _VRSL_GI_ON
         #if defined(_VRSL_GI_ENFORCELIMIT)
             VRSLVertLightData ld;
             UNITY_INITIALIZE_OUTPUT(VRSLVertLightData, ld);
@@ -650,9 +650,9 @@ half4 fragForwardBaseInternal (VertexOutputForwardBase i, bool frontFace)
     #endif
 
 
-    #if _VRSL_GI
+    #if _VRSL_GI_ON
         //#ifndef VRSL_GI_PROJECTOR
-        #if defined(_VRSL_GI) && defined(_VRSL_GI_SPECULARHIGHLIGHTS) && !defined(_VRSL_MG_MAP) && !defined(VRSL_GI_PROJECTOR)
+        #if defined(_VRSL_GI_ON) && defined(_VRSL_GI_SPECULARHIGHLIGHTS) && !defined(_VRSL_MG_MAP) && !defined(VRSL_GI_PROJECTOR)
             float2 mg = MetallicGlossVRSL(s.metallicGlossMap);
         #else
             float2 mg = VRSLMetallicGloss(i.tex.xy);
@@ -708,7 +708,7 @@ struct VertexOutputForwardAdd
 #if defined(_PARALLAXMAP)
     half3 viewDirForParallax            : TEXCOORD8;
 #endif
-//#ifdef _VRSL_GI
+//#ifdef _VRSL_GI_ON
    // float3 normalDir    : TEXCOORD9;
 //#endif
     UNITY_VERTEX_OUTPUT_STEREO
@@ -767,7 +767,7 @@ VertexOutputForwardAdd vertForwardAdd (VertexInput v)
         o.viewDirForParallax = mul (rotation, ObjSpaceViewDir(v.vertex));
     #endif
 
-    //#ifdef _VRSL_GI
+    //#ifdef _VRSL_GI_ON
       // o.normalDir = UnityObjectToWorldNormal(v.normal);
     //#endif
 
@@ -814,7 +814,7 @@ struct VertexOutputDeferred
         float3 posWorld                     : TEXCOORD6;
     #endif
 
-    //#ifdef _VRSL_GI
+    //#ifdef _VRSL_GI_ON
        // float3 normalDir    : TEXCOORD7;
     //#endif
 
@@ -877,7 +877,7 @@ VertexOutputDeferred vertDeferred (VertexInput v)
         o.tangentToWorldAndPackedData[2].w = viewDirForParallax.z;
     #endif
 
-    //#ifdef _VRSL_GI
+    //#ifdef _VRSL_GI_ON
       //  o.normalDir = UnityObjectToWorldNormal(v.normal);
     //#endif
 
