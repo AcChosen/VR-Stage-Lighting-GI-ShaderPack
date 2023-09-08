@@ -453,7 +453,7 @@ using UnityEditor;
             EditorGUI.BeginChangeCheck();
             {
                 VRSLStyles.DrawLogo();
-                VRSLStyles.ShurikenHeaderCentered(VRSLStyles.ver);
+                VRSLStyles.ShurikenHeaderCentered(VRSLStyles.GetVersion());
                // VRSLStyles.ShurikenHeaderCentered(GetShaderType());
                 VRSLStyles.PartingLine();
                 VRSLStyles.DepthPassWarning();
@@ -1201,7 +1201,7 @@ using UnityEditor;
             if (overrideRenderQueue || material.renderQueue < minRenderQueue || material.renderQueue > maxRenderQueue)
             {
                 if (!overrideRenderQueue)
-                    Debug.LogFormat(LogType.Log, LogOption.NoStacktrace, null, "Render queue value outside of the allowed range ({0} - {1}) for selected Blend mode, resetting render queue to default", minRenderQueue, maxRenderQueue);
+                    //Debug.LogFormat(LogType.Log, LogOption.NoStacktrace, null, "Render queue value outside of the allowed range ({0} - {1}) for selected Blend mode, resetting render queue to default", minRenderQueue, maxRenderQueue);
                 material.renderQueue = defaultRenderQueue;
             }
         }
