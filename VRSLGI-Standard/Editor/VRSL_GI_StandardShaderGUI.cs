@@ -88,7 +88,7 @@ using UnityEditor;
         MaterialProperty detailNormalMapScale = null;
         MaterialProperty detailNormalMap = null;
         MaterialProperty uvSetSecondary = null;
-        //MaterialProperty useVRSLGI = null;
+        //MaterialProperty _VRSLGIToggle = null;
         //MaterialProperty useVRSLGISpecular = null;
 
 
@@ -485,11 +485,11 @@ using UnityEditor;
                 m_MaterialEditor.TextureScaleOffsetProperty(detailAlbedoMap);
                 m_MaterialEditor.ShaderProperty(uvSetSecondary, Styles.uvSetLabel.text);
                 EditorGUILayout.Space(5);
-                //material.SetFloat("useVRSLGI",EditorGUILayout.Toggle("Use VRSL GI",FloatToBool(material.GetFloat("useVRSLGI"))) ? 1.0f : 0.0f);
+                //material.SetFloat("_VRSLGIToggle",EditorGUILayout.Toggle("Use VRSL GI",FloatToBool(material.GetFloat("_VRSLGIToggle"))) ? 1.0f : 0.0f);
                 PropertyGroup(()=>{
                 //m_MaterialEditor.ShaderProperty(vrslToggle, "Enable");
-                material.SetFloat("useVRSLGI",EditorGUILayout.Toggle("Enable VRSL GI",FloatToBool(material.GetFloat("useVRSLGI"))) ? 1.0f : 0.0f);
-                ToggleGroup(material.GetFloat("useVRSLGI") == 0);
+                material.SetFloat("_VRSLGIToggle",EditorGUILayout.Toggle("Enable VRSL GI",FloatToBool(material.GetFloat("_VRSLGIToggle"))) ? 1.0f : 0.0f);
+                ToggleGroup(material.GetFloat("_VRSLGIToggle") == 0);
                 PropertyGroupLayer(()=>{
                     if(material.shader.name.Contains("Project") == true){
                         m_MaterialEditor.ShaderProperty(_VRSLGIQuadLightingSystem, "Priority System");
@@ -1258,7 +1258,7 @@ using UnityEditor;
             {
                 SetKeyword(material, "_SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A", GetSmoothnessMapChannel(material) == SmoothnessMapChannel.AlbedoAlpha);
             }
-            SetKeyword(material,"_VRSL_GI", material.GetFloat("useVRSLGI") == 1.0f);
+            SetKeyword(material,"_VRSL_GI_ON", material.GetFloat("_VRSLGIToggle") == 1.0f);
             SetKeyword(material,"_VRSL_GI_SPECULARHIGHLIGHTS", material.GetFloat("useVRSLGISpecular") == 1.0f);
             SetKeyword(material, "_VRSL_GLOBALLIGHTTEXTURE", material.GetFloat("_UseGlobalVRSLLightTexture") == 1.0f);
             SetDiffuseMode(material,material.GetInt("_VRSLGIDiffuseMode"));

@@ -23,7 +23,7 @@ Shader "VRSL/GI-Addon/Standard Shader"
 
         [ToggleOff] _SpecularHighlights("Specular Highlights", Float) = 1.0
         [ToggleOff] _GlossyReflections("Glossy Reflections", Float) = 1.0
-        [ToggleOff] useVRSLGI("Use VRSL GI", Float) = 1.0
+        [ToggleOff] _VRSLGIToggle("Use VRSL GI", Float) = 1.0
         [ToggleOff] _UseGlobalVRSLLightTexture("Use Global VRSL Light Texture", Float) = 0.0
         [ToggleOff] useVRSLGISpecular("Use VRSL GI Specular", Float) = 1.0
         _VRSLDiffuseMix ("VRSL Diffuse Mix", Range(0, 1)) = 1.0
@@ -177,7 +177,7 @@ Shader "VRSL/GI-Addon/Standard Shader"
 
             // -------------------------------------
             
-            #pragma shader_feature_local _ _VRSL_GI
+            #pragma shader_feature_local _ _VRSL_GI_ON
             #pragma shader_feature_local _ _VRSL_GI_SPECULARHIGHLIGHTS
             #pragma shader_feature_local _ _VRSL_SPEC_R _VRSL_SPEC_G _VRSL_SPEC_B _VRSL_SPEC_A
             #pragma shader_feature_local _ _VRSL_SPECFUNC_GGX _VRSL_SPECFUNC_BECKMAN _VRSL_SPECFUNC_PHONG
@@ -230,6 +230,7 @@ Shader "VRSL/GI-Addon/Standard Shader"
             #pragma vertex vertBase
             #pragma fragment fragBase
             #define VRSL_ENABLED defined(_VRSL_ON)
+            #define VRSL_GI_ENABLED defined(_VRSL_GI_ON)
             #include "CGIncludes/VRSLGIStandardCoreForward.cginc"
 
             ENDCG
@@ -274,6 +275,7 @@ Shader "VRSL/GI-Addon/Standard Shader"
             #pragma vertex vertAdd
             #pragma fragment fragAdd
             #define VRSL_ENABLED defined(_VRSL_ON)
+            #define VRSL_GI_ENABLED defined(_VRSL_GI_ON)
             #include "CGIncludes/VRSLGIStandardCoreForward.cginc"
 
             ENDCG
@@ -312,6 +314,7 @@ Shader "VRSL/GI-Addon/Standard Shader"
             #pragma vertex vertShadowCaster
             #pragma fragment fragShadowCaster
             #define VRSL_ENABLED defined(_VRSL_ON)
+            #define VRSL_GI_ENABLED defined(_VRSL_GI_ON)
             #include "CGIncludes/VRSLGIStandardShadow.cginc"
 
             ENDCG
@@ -348,6 +351,7 @@ Shader "VRSL/GI-Addon/Standard Shader"
 			#pragma shader_feature_local _VRSL_MIX_MIX
 			//End VRSL Stuff
             #define VRSL_ENABLED defined(_VRSL_ON)
+            #define VRSL_GI_ENABLED defined(_VRSL_GI_ON)
             #include "CGIncludes/VRSLGIStandardMeta.cginc"
             ENDCG
         }
