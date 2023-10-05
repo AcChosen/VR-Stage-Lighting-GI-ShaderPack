@@ -8,12 +8,99 @@
 #include "UnityPBSLighting.cginc" // TBD: remove
 #include "VRSLGIStandardUtils.cginc"
 
+#include "Assets/VRSL Addons/VRSL-GI Shader Package/VRSLGI-Functions.cginc"
+
 
 //VRSL Stuff
 #if VRSL_ENABLED
 	#include "Packages/com.acchosen.vr-stage-lighting/Runtime/Shaders/VRSLDMX.cginc"
 #endif
 //End VRSL Stuff
+
+#if _VRSL_AUDIOLINK_ON
+    #include "Packages/com.llealloo.audiolink/Runtime/Shaders/AudioLink.cginc"
+    #if defined(_VRSL_AUDIOLINK_ON) && !defined(_VRSL_ON)
+        UNITY_INSTANCING_BUFFER_START(Props)
+            UNITY_DEFINE_INSTANCED_PROP(float, _EnableAudioLink)
+            UNITY_DEFINE_INSTANCED_PROP(float, _EnableColorChord)
+            UNITY_DEFINE_INSTANCED_PROP(float, _NumBands)
+            UNITY_DEFINE_INSTANCED_PROP(float, _Band)
+            UNITY_DEFINE_INSTANCED_PROP(float, _BandMultiplier)
+            UNITY_DEFINE_INSTANCED_PROP(float, _Delay)
+            UNITY_DEFINE_INSTANCED_PROP(uint, _EnableColorTextureSample)
+            UNITY_DEFINE_INSTANCED_PROP(float, _TextureColorSampleX)
+            UNITY_DEFINE_INSTANCED_PROP(float, _TextureColorSampleY)
+            UNITY_DEFINE_INSTANCED_PROP(float, _ThemeColorTarget)
+            UNITY_DEFINE_INSTANCED_PROP(uint, _EnableThemeColorSampling)
+            UNITY_DEFINE_INSTANCED_PROP(float4, _Emission)
+            UNITY_DEFINE_INSTANCED_PROP(float, _GlobalIntensity)
+            UNITY_DEFINE_INSTANCED_PROP(float, _GlobalIntensityBlend)
+            UNITY_DEFINE_INSTANCED_PROP(float, _FinalIntensity) 
+        UNITY_INSTANCING_BUFFER_END(Props)
+        float4 getBaseEmission()
+        {
+            return UNITY_ACCESS_INSTANCED_PROP(Props, _Emission);
+        }
+        float getGlobalIntensity()
+        {
+            return lerp(1.0,UNITY_ACCESS_INSTANCED_PROP(Props, _GlobalIntensity), UNITY_ACCESS_INSTANCED_PROP(Props, _GlobalIntensityBlend));
+        }
+
+        float getFinalIntensity()
+        {
+            return UNITY_ACCESS_INSTANCED_PROP(Props, _FinalIntensity);
+        }
+    #endif
+
+    Texture2D   _SamplingTexture;
+    Texture2D   _AudioLinkEmissionMap;
+
+    float getEnableAudioLink()
+    {
+        return UNITY_ACCESS_INSTANCED_PROP(Props, _EnableAudioLink);
+
+    }
+    float getEnableColorChord()
+    {
+        return UNITY_ACCESS_INSTANCED_PROP(Props, _EnableColorChord);
+    }
+    float getNumOfBands()
+    {
+        return UNITY_ACCESS_INSTANCED_PROP(Props, _NumBands);
+    }
+    float getBand()
+    {
+        return UNITY_ACCESS_INSTANCED_PROP(Props, _Band);
+    }
+    float getBandMultiplier()
+    {
+        return UNITY_ACCESS_INSTANCED_PROP(Props, _BandMultiplier);
+    }
+    float getDelay()
+    {
+        return UNITY_ACCESS_INSTANCED_PROP(Props, _Delay);
+    }
+    uint getEnableColoTextureSample()
+    {
+        return UNITY_ACCESS_INSTANCED_PROP(Props, _EnableColorTextureSample);
+    }    
+    float getTextureColorSampleX()
+    {
+        return UNITY_ACCESS_INSTANCED_PROP(Props, _TextureColorSampleX);
+    }
+    float getTextureColorSampleY()
+    {
+        return UNITY_ACCESS_INSTANCED_PROP(Props, _TextureColorSampleY);
+    }
+    float getThemeColorTarget()
+    {
+        return UNITY_ACCESS_INSTANCED_PROP(Props, _ThemeColorTarget);
+    } 
+    uint getEnableThemeColor()
+    {
+        return UNITY_ACCESS_INSTANCED_PROP(Props, _EnableThemeColorSampling);
+    }          
+#endif
 
 #if _AREALIT_ON
 	#include "Assets/AreaLit/Shader/Lighting.hlsl"
@@ -65,84 +152,114 @@ half        _UVSec;
 half4       _EmissionColor;
 sampler2D   _EmissionMap;
 
-#ifdef      _VRSL_GLOBALLIGHTTEXTURE
-    Texture2D   _Udon_VRSL_GI_LightTexture;
-#else
-    Texture2D   _VRSL_LightTexture;
-#endif
-
-uniform float4  _VRSL_LightTexture_TexelSize;
-SamplerState    VRSL_BilinearClampSampler, VRSLGI_PointClampSampler;
-int     _Udon_VRSL_GI_LightCount;
-
-float _LTCGIStrength;
-float _AreaLitStrength;
-float _AreaLitRoughnessMult;
-Texture2D _AreaLitOcclusion;
-float4 _AreaLitOcclusion_ST;
-int _OcclusionUVSet;
-
-
-
-
-#ifndef VRSL_GI_PROJECTOR
-sampler2D   _VRSLMetallicGlossMap;
-half        _VRSLMetallicMapStrength;
-half        _VRSLGlossMapStrength;
-half        _VRSLSmoothnessChannel;
-half        _VRSLMetallicChannel;
-half        _VRSLInvertMetallicMap;
-half        _VRSLInvertSmoothnessMap;
-
-Texture2D   _VRSLShadowMask1;
-Texture2D   _VRSLShadowMask2;
-Texture2D   _VRSLShadowMask3;
-
-int         _UseVRSLShadowMask1;
-int         _UseVRSLShadowMask2;
-int         _UseVRSLShadowMask3;
-
-#else
-int         _VRSLGIVertexFalloff;
-float       _VRSLGIVertexAttenuation;
-
-#endif
-
-half        _VRSLSpecularShine;
-half        _VRSLGlossiness;
-half        _VRSLSpecularStrength;
-half        _VRSLGIStrength;
-half        _VRSLDiffuseMix;
-half        _VRSLSpecularMultiplier;
-
-half        _UseVRSLShadowMask1RStrength;
-half        _UseVRSLShadowMask1GStrength;
-half        _UseVRSLShadowMask1BStrength;
-half        _UseVRSLShadowMask1AStrength;
-
-half        _UseVRSLShadowMask2RStrength;
-half        _UseVRSLShadowMask2GStrength;
-half        _UseVRSLShadowMask2BStrength;
-half        _UseVRSLShadowMask2AStrength;
-
-half        _UseVRSLShadowMask3RStrength;
-half        _UseVRSLShadowMask3GStrength;
-half        _UseVRSLShadowMask3BStrength;
-half        _UseVRSLShadowMask3AStrength;
-
-half        _VRSLShadowMaskUVSet;
-
-//float4      _ProjectorColor;
-half        _VRSLProjectorStrength;
-
 #if VRSL_ENABLED
 	Texture2D   	_DMXEmissionMap;
 	int				_ThirteenChannelMode;
 	int				_DMXEmissionMapMix;
-	float			_UniversalIntensity;
 	float4 			_FixtureRotationOrigin;
-	float			_FixtureMaxIntensity;
 #endif
+    float			_FixtureMaxIntensity;
+	float			_UniversalIntensity;    
+
+
+#if _VRSL_AUDIOLINK_ON
+    float4 RGBtoHSV(in float3 RGB)
+    {
+        float3 HSV = 0;
+        HSV.z = max(RGB.r, max(RGB.g, RGB.b));
+        float M = min(RGB.r, min(RGB.g, RGB.b));
+        float C = HSV.z - M;
+        if (C != 0)
+        {
+            HSV.y = C / HSV.z;
+            float3 Delta = (HSV.z - RGB) / C;
+            Delta.rgb -= Delta.brg;
+            Delta.rg += float2(2,4);
+            if (RGB.r >= HSV.z)
+                HSV.x = Delta.b;
+            else if (RGB.g >= HSV.z)
+                HSV.x = Delta.r;
+            else
+                HSV.x = Delta.g;
+            HSV.x = frac(HSV.x / 6);
+        }
+        return float4(HSV,1);
+    }
+    float3 Hue(float H)
+    {
+        float R = abs(H * 6 - 3) - 1;
+        float G = 2 - abs(H * 6 - 2);
+        float B = 2 - abs(H * 6 - 4);
+        return saturate(float3(R,G,B));
+    }
+    float4 HSVtoRGB(in float3 HSV)
+    {
+        return float4(((Hue(HSV.x) - 1) * HSV.y + 1) * HSV.z,1);
+    }
+
+    float4 GetTextureSampleColor()
+    {
+        float4 rawColor = _SamplingTexture.SampleLevel(VRSL_BilinearClampSampler, float2(getTextureColorSampleX(),getTextureColorSampleY()), 0);
+        float4 h = RGBtoHSV(rawColor.rgb);
+        h.z = 1.0;
+        return(HSVtoRGB(h) * _RenderTextureMultiplier);
+    }
+    float4 GetThemeSampleColor()
+    {
+        switch(UNITY_ACCESS_INSTANCED_PROP(Props, _ThemeColorTarget))
+        {
+            case 1:
+                return AudioLinkData(ALPASS_THEME_COLOR0);
+            case 2:
+                return AudioLinkData(ALPASS_THEME_COLOR1);
+            case 3:
+                return AudioLinkData(ALPASS_THEME_COLOR2);
+            case 4:
+                return AudioLinkData(ALPASS_THEME_COLOR3);
+            default:
+                return float4(0,0,0,1);
+        }
+    }
+
+    inline float AudioLinkLerp3_g5( int Band, float Delay )
+    {
+        return AudioLinkLerp( ALPASS_AUDIOLINK + float2( Delay, Band ) ).r;
+    }
+
+    float GetAudioReactAmplitude()
+    {
+        if(getEnableAudioLink() > 0)
+        {
+            return AudioLinkLerp3_g5(getBand(), getDelay()) * getBandMultiplier();
+        }
+        else
+        {
+            return 1;
+        }
+    }
+
+    float4 GetColorChordLight()
+    {
+        return AudioLinkData(ALPASS_CCLIGHTS).rgba *3;
+    }
+
+    float4 GetAudioLinkEmissionColor()
+    {
+        float4 emissiveColor = UNITY_ACCESS_INSTANCED_PROP(Props,_Emission);
+        float4 col =  getEnableColoTextureSample() > 0 ? ((emissiveColor.r + emissiveColor.g + emissiveColor.b)/3.0) * GetTextureSampleColor() : emissiveColor;
+        col =  getEnableThemeColor() > 0 ? ((emissiveColor.r + emissiveColor.g + emissiveColor.b)/3.0) * GetThemeSampleColor() : col;
+        col = (getEnableColorChord() == 1 ? GetColorChordLight() * 1.5:  col) * _FixtureMaxIntensity;
+        float intensity = GetAudioReactAmplitude() * getGlobalIntensity() * getFinalIntensity() * _UniversalIntensity;
+        return lerp(float4(0,0,0,0), col, intensity*intensity*intensity);
+    }
+    
+    float4 getAudioLinkEmissionMask(float2 uv)
+    {
+        return _AudioLinkEmissionMap.Sample(VRSL_BilinearClampSampler, uv);
+    }
+
+#endif
+
 
 
 struct SampleData {
@@ -204,15 +321,15 @@ float4 TexCoords(VertexInput v)
         
         float2 texcoord;
         #if _VRSL_SHADOWMASK_UV0
-            texcoord = TRANSFORM_TEX(v.uv0, _MainTex); // Always source from uv0
+            texcoord = v.uv0; // Always source from uv0
         #elif _VRSL_SHADOWMASK_UV1
-            texcoord = TRANSFORM_TEX(v.uv1, _MainTex); // Always source from uv0
+            texcoord = v.uv1; // Always source from uv0
         #elif _VRSL_SHADOWMASK_UV2
-            texcoord = TRANSFORM_TEX(v.uv2, _MainTex); // Always source from uv0
+            texcoord = v.uv2; // Always source from uv0
         #elif _VRSL_SHADOWMASK_UV3
-            texcoord = TRANSFORM_TEX(v.uv3, _MainTex); // Always source from uv0
+            texcoord = v.uv3 // Always source from uv0
         #elif _VRSL_SHADOWMASK_UV4
-            texcoord = TRANSFORM_TEX(v.uv4, _MainTex); // Always source from uv0
+            texcoord = v.uv4; // Always source from uv0
         #endif
         return texcoord;
     }
@@ -517,8 +634,10 @@ half3 DMXEmission(float2 uv)
 				dmxColor *= strobe;
 		//	#endif
 		#endif
-		emissTex = (emissTex * _FixtureMaxIntensity) * dmxColor.rgb * getGlobalIntensity() * getFinalIntensity() * _UniversalIntensity;
+		emissTex = (emissTex * _FixtureMaxIntensity) * dmxColor.rgb;
+        float sliders = getGlobalIntensity() * getFinalIntensity() * _UniversalIntensity;
 //		emissTex = Filtering(emissTex, _HueEmiss, _SaturationEmiss, _BrightnessEmiss, _ContrastEmiss, 0);
+        dmxIntensity *= sliders;
         emissTex = lerp(float3(0,0,0), emissTex, dmxIntensity * dmxIntensity * dmxIntensity);
 		return emissTex;
 	#else

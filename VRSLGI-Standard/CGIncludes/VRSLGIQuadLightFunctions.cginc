@@ -1,4 +1,4 @@
-    
+// Quad Light Scoring system by Razgriz
 #define SCORE_MIN -1000
 #ifdef      _VRSL_GLOBALLIGHTTEXTURE
     int lightCount = _Udon_VRSL_GI_LightTexture.Load( int3(0, 2, 0) ); 
@@ -9,10 +9,17 @@ const float4 worldPostiion = o.meshWorldPos;
 
 float4 lightPositions[64];
 float4 lightColors[64];
+#if _VRSL_GI_ANGLES
+    float4 lightDirections[64];
+    float idealAngle = 1;
+#endif
 float scores[64];
 
 float4 qLightPositions[4];
 float4 qLightColors[4];
+#if _VRSL_GI_ANGLES
+    float4 qLightDirections[4];
+#endif
 
 // qLightColors[0] = float4(0,0,0,0);
 // qLightColors[1] = float4(0,0,0,0);
@@ -25,8 +32,17 @@ if(lightCount > 0)
         float4 rawLightColor = _VRSL_LightTexture.Load( int3(x, 0, 0) );   
         float4 lightPos = _VRSL_LightTexture.Load( int3(x, 1, 0) );
 
+        
         lightPositions[x] = lightPos;
         lightColors[x] = rawLightColor;
+        #if _VRSL_GI_ANGLES
+            //float4 lightDirection = float4(0,0,0,0);
+            //if(lightPos.w > 180)
+          //  {
+            lightDirections[x] = _VRSL_LightTexture.Load( int3(x, 3, 0) );
+            // float angle = abs(AngleBetweenVecotrs(lightDirections[x].xyz, worldPostiion.xyz - lightPos.xyz));
+            //}
+        #endif
 
         scores[x] = SCORE_MIN;
 
@@ -41,7 +57,13 @@ if(lightCount > 0)
 
         // Ideally we'd calculate a score based on the distance and intensity of the light according to an inverse law
         // but for some reason that's not working, so we'll just do this instead. It seems to work well
-        float combinedScore = (-sqrt(distanceSquared) + lightIntensity);
+
+        // #if _VRSL_GI_ANGLES
+        //     float angleError = (angle - idealAngle)/idealAngle;
+        //     float combinedScore = (-sqrt(distanceSquared) + lightIntensity) - angleError;
+        // #else
+            float combinedScore = (-sqrt(distanceSquared) + lightIntensity);
+        // #endif
         // float distanceScore = -distanceSquared;
         // float score = _SanctumGIPriority ? combinedScore : distanceScore;
 
@@ -69,6 +91,9 @@ if(lightCount > 0)
         }
         qLightPositions[j] = lightPositions[index];
         qLightColors[j] = lightColors[index];
+        #if _VRSL_GI_ANGLES
+           qLightDirections[j] = lightDirections[index]; 
+        #endif
         scores[index] = SCORE_MIN;
     }
     lightCount = min(lightCount, 4);

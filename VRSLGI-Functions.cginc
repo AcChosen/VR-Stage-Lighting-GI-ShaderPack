@@ -1,3 +1,85 @@
+
+
+
+#ifdef      _VRSL_GLOBALLIGHTTEXTURE
+    Texture2D   _Udon_VRSL_GI_LightTexture;
+#else
+    Texture2D   _VRSL_LightTexture;
+#endif
+
+uniform float4  _VRSL_LightTexture_TexelSize;
+SamplerState    VRSL_BilinearClampSampler, VRSLGI_PointClampSampler;
+int     _Udon_VRSL_GI_LightCount;
+
+float _LTCGIStrength;
+float _AreaLitStrength;
+float _AreaLitRoughnessMult;
+Texture2D _AreaLitOcclusion;
+float4 _AreaLitOcclusion_ST;
+int _OcclusionUVSet;
+
+
+
+
+#ifndef VRSL_GI_PROJECTOR
+sampler2D   _VRSLMetallicGlossMap;
+half        _VRSLMetallicMapStrength;
+half        _VRSLGlossMapStrength;
+half        _VRSLSmoothnessChannel;
+half        _VRSLMetallicChannel;
+half        _VRSLInvertMetallicMap;
+half        _VRSLInvertSmoothnessMap;
+
+Texture2D   _VRSLShadowMask1;
+Texture2D   _VRSLShadowMask2;
+Texture2D   _VRSLShadowMask3;
+
+int         _UseVRSLShadowMask1;
+int         _UseVRSLShadowMask2;
+int         _UseVRSLShadowMask3;
+
+#else
+int         _VRSLGIVertexFalloff;
+float       _VRSLGIVertexAttenuation;
+
+#endif
+
+half        _VRSLGISpecularClamp;
+half        _VRSLGIDiffuseClamp;
+
+half        _VRSLSpecularShine;
+half        _VRSLGlossiness;
+half        _VRSLSpecularStrength;
+half        _VRSLGIStrength;
+half        _VRSLDiffuseMix;
+half        _VRSLSpecularMultiplier;
+
+half        _UseVRSLShadowMask1RStrength;
+half        _UseVRSLShadowMask1GStrength;
+half        _UseVRSLShadowMask1BStrength;
+half        _UseVRSLShadowMask1AStrength;
+
+half        _UseVRSLShadowMask2RStrength;
+half        _UseVRSLShadowMask2GStrength;
+half        _UseVRSLShadowMask2BStrength;
+half        _UseVRSLShadowMask2AStrength;
+
+half        _UseVRSLShadowMask3RStrength;
+half        _UseVRSLShadowMask3GStrength;
+half        _UseVRSLShadowMask3BStrength;
+half        _UseVRSLShadowMask3AStrength;
+half        _RenderTextureMultiplier;
+
+half        _VRSLShadowMaskUVSet;
+
+//float4      _ProjectorColor;
+half        _VRSLProjectorStrength;
+
+
+
+
+
+
 #if _VRSL_GI_SPECULARHIGHLIGHTS
 // Upgrade NOTE: excluded shader from DX11, OpenGL ES 2.0 because it uses unsized arrays
 #pragma exclude_renderers d3d11 gles
@@ -65,6 +147,7 @@
     Distribution *= (2+specularpower) / (2*3.1415926535);
     return Distribution;
     }
+    
 
 #endif
 #if !defined(VRSL_GI_PROJECTOR)
@@ -81,6 +164,12 @@
         return _VRSLShadowMask3.SampleLevel(VRSL_BilinearClampSampler, uv, 0);
     }
 #endif
+
+float AngleBetweenVecotrs(float3 v1, float3 v2)
+{
+    return dot(v1, v2) / (length(v1) * length(v2));
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // uint Four8BitTo32Bit(uint4 input)
@@ -98,23 +187,23 @@
     //     return output; 
     // }
 
-//    uint PackTwoHalves(half2 input, int precision)
-//    {
-//         uint a = f32tof16(input.x);
-//         uint b = f32tof16(input.y);
-//         uint result;
-//         return result = b << 16 | a;
+    // uint PackTwoHalves(half2 input)
+    // {
+    //         uint a = f32tof16(input.x);
+    //         uint b = f32tof16(input.y);
+    //         uint result;
+    //         return result = b << 16 | a;
 
-//    }
+    // }
 
-//    half2 UnPackTwoHalves(uint input, int precision)
-//    {
+    // half2 UnPackTwoHalves(uint input)
+    // {
 
-//         half a = f16tof32(input);
-//         half b = f16tof32(input >> 16);
-//         return half2(a,b);
+    //         half a = f16tof32(input);
+    //         half b = f16tof32(input >> 16);
+    //         return half2(a,b);
 
-//    }
+    // }
 //     void UnPackPositionAndColor(float4 input, out float4 position, out float4 color)
 //     {
 //         half2 xIn = UnPackTwoHalves(input.x,4096 );
@@ -143,6 +232,7 @@
        // uint4 data[16];
         float4 colors[4];
         float4 positions[4];
+        float4 directions[4];
             #if defined(VERTEXLIGHT_ON)
             // Non Important Lights
             float4 vDotNL;
@@ -198,13 +288,24 @@
         for (int index = 0; index < lightCount; index++)
         {
             // ld.vPosition[index] = float3(quadLightX[index], quadLightY[index], quadLightZ[index]);
-            float4 rawLightColor = ld.colors[index];
+            
+            //#if _VRSL_GI_ANGLES
+
+                float4 rawLightColor = ld.colors[index];
+                
+            //#else
+           //     float4 rawLightColor = ld.colors[index];
+         //   #endif
+
+            float3 lightColor = rawLightColor.rgb * (0.5 * rawLightColor.a);
+
+
             float4 lightPos = ld.positions[index];
 
 
             float specular = 1.0;
             
-            float3 lightColor = rawLightColor.rgb * (0.5 * rawLightColor.a);
+            
             float range = distance(worldPos, lightPos.xyz);
             float3 lightDirection = normalize(lightPos.xyz - worldPos);
             #if _VRSL_DIFFUSETOON
@@ -240,7 +341,37 @@
             
             lightColor = lightColor * ((_VRSLGIStrength));
             diffuseColor = lerp(float3(1,1,1), diffuseColor, _VRSLDiffuseMix);
-            vertexLighting += falloff * lightColor * atten * diffuseColor * specular;
+
+            #if _VRSL_GI_ANGLES
+                // if(lightPos.w > 180)
+                // {
+                    float4 rawLightDirection = ld.directions[index];
+                    float3 spotlightDir = rawLightDirection.xyz;
+                    //float angle = trunc(rawLightDirection.w) - 1000;
+                    float angle = (floor(rawLightDirection.w - 1)) / 255;
+                    angle = angle * 180.0;
+                   // float blend = frac(rawLightDirection.w);
+                    // EightBitUnpack(rawLightDirection.w, blend, angle);
+                    
+                    //float blend = abs(rawLightDirection.w - 1000);
+                    //blend = frac(blend) * 10000;
+                    float theta = dot(lightDirection, normalize(-spotlightDir));
+                    float outerCone = cos(radians(angle));
+                    float spotlight = clamp(theta - outerCone,0.0,1.0);
+                // spotlight = lerp(1.0,spotlight, angle > -0.0001);
+                    // atten = lerp(atten, atten*spotlight, blend);
+                    // specular = lerp(specular, specular*spotlight, blend);
+                    atten = atten*spotlight;
+                    specular = specular*spotlight;
+                    // diffuseColor = rawLightDirection;
+              //  }
+             //  }
+            #endif
+            #ifdef VRSL_GI_PROJECTOR
+                lightColor = clamp(lightColor, float3(0,0,0), float3(_VRSLGIDiffuseClamp, _VRSLGIDiffuseClamp, _VRSLGIDiffuseClamp));
+            #endif
+
+            vertexLighting += falloff * lightColor * atten * diffuseColor * clamp(specular, 0.0, _VRSLGISpecularClamp);
             // diffuseColor = lerp(float3(1,1,1), diffuseColor, _VRSLDiffuseMix);
             // vertexLighting += ld.vColor[index] * specular * diffuseColor * falloff * dotProduct;
         }
@@ -360,6 +491,16 @@
         return lerp(1,s1,s1Strength);
     }
 
+    // float CalcLuminance(float3 color)       
+    // {
+    //     return saturate((color.x * color.y * color.z)/3.0);
+    // }
+    // void EightBitUnpack( in float c, inout float a, inout float b )
+    // {
+    //     a = floor(c) / 255; // removes the fractional value and scales back to 0-1
+    //     b = frac(c); // removes the integer value, leaving B (0-1)
+    // }
+
     float3 VRSLGI(float3 worldPos, float3 worldNormal, float roughness, float3 eyeVec, float3 diffuseColor, float2 mg, float2 uv, float occlusion)
     {
         float3 finalOut = 0.0;
@@ -424,18 +565,45 @@
         {
             
             //Begin Diffuse Stuff
-            #ifdef _VRSL_GLOBALLIGHTTEXTURE
-                float4 rawLightColor = _Udon_VRSL_GI_LightTexture.Load( int3(x, 0, 0) );   
-                float4 lightPos = _Udon_VRSL_GI_LightTexture.Load( int3(x, 1, 0) );
+
+
+            #if _VRSL_GI_ANGLES
+                #ifdef _VRSL_GLOBALLIGHTTEXTURE
+                    //float4 rawLightColorAndDirection = _Udon_VRSL_GI_LightTexture.Load( int3(x, 0, 0) );   
+                    
+                    float4 rawLightColor = _Udon_VRSL_GI_LightTexture.Load( int3(x, 0, 0) );
+                     
+                    float4 lightPos = _Udon_VRSL_GI_LightTexture.Load( int3(x, 1, 0) );
+                 //   float4 wwww = _Udon_VRSL_GI_LightTexture.Load( int3(x, 0, 0) );  
+                #else
+                    //float4 rawLightColorAndDirection = _VRSL_LightTexture.Load( int3(x, 0, 0) );   
+                    
+                    float4 rawLightColor = _VRSL_LightTexture.Load( int3(x, 0, 0) );
+ 
+                    float4 lightPos = _VRSL_LightTexture.Load( int3(x, 1, 0) );
+                  //  float4 wwww = _VRSL_LightTexture.Load( int3(x, 0, 0) );  
+                #endif
+                float isSpotlight = lightPos.w;
             #else
-                float4 rawLightColor = _VRSL_LightTexture.Load( int3(x, 0, 0) );   
-                float4 lightPos = _VRSL_LightTexture.Load( int3(x, 1, 0) );
+                #ifdef _VRSL_GLOBALLIGHTTEXTURE
+                    float4 rawLightColor = _Udon_VRSL_GI_LightTexture.Load( int3(x, 0, 0) );   
+                    float4 lightPos = _Udon_VRSL_GI_LightTexture.Load( int3(x, 1, 0) );
+
+                    //float4 wwww = _Udon_VRSL_GI_LightTexture.Load( int3(x, 0, 0) );
+                #else
+                    float4 rawLightColor = _VRSL_LightTexture.Load( int3(x, 0, 0) );   
+                    float4 lightPos = _VRSL_LightTexture.Load( int3(x, 1, 0) );
+
+                   // float4 wwww = _VRSL_LightTexture.Load( int3(x, 0, 0) );  
+                #endif
             #endif
 
-
+            float3 lightColor = rawLightColor.rgb * (0.5 * rawLightColor.a);
             float specular = 1.0;
             
-            float3 lightColor = rawLightColor.rgb * (0.5 * rawLightColor.a);
+            
+            
+            
             float range = distance(worldPos, lightPos.xyz);
             float3 lightDirection = normalize(lightPos.xyz - worldPos);
             #if _VRSL_DIFFUSETOON
@@ -465,13 +633,15 @@
                 specular = lerp(specular, specular * specular, _VRSLSpecularShine);
 
                 specular *= (1/(range*0.5));
+                //specular *= CalcLuminance(rawLightColor.rgb);
             #endif
             //End SPecular Stuff
 
             //Begin ShadowMask Stuff
             #ifndef VRSL_GI_PROJECTOR
                 #if defined(_VRSL_SHADOWMASK1) || defined(_VRSL_SHADOWMASK2) || defined(_VRSL_SHADOWMASK3)
-                
+                    lightPos.w = (frac(lightPos.w * 0.1)) * 10;
+
                     int maskSelection = (int) floor(lightPos.w);
                     int maskChannel = (int) floor(frac(lightPos.w) * 10);
 
@@ -490,14 +660,41 @@
             lightColor = lerp(float3(0,0,0), lightColor * _VRSLGIStrength, shadowmask);
             diffuseColor = lerp(float3(1,1,1), diffuseColor, _VRSLDiffuseMix);
             
-            // float3 spotlightDir = float3(0,-1,0);
-            // float theta = dot(lightDirection, normalize(-spotlightDir));
-            // float outerCone = cos(radians(95.5f));
-            // float spotlight = clamp(theta - outerCone,0.0,1.0);
-            // atten = atten*spotlight;
-            // specular = specular*spotlight;
+            #if _VRSL_GI_ANGLES
+                
+               if(isSpotlight > 180.0f)
+               {
+                    #ifdef _VRSL_GLOBALLIGHTTEXTURE
+                        float4 rawLightDirection = _Udon_VRSL_GI_LightTexture.Load( int3(x, 3, 0) );    
+                    #else
+                        float4 rawLightDirection = _VRSL_LightTexture.Load( int3(x, 3, 0) );    
+                    #endif
+                    float3 spotlightDir = rawLightDirection.xyz;
+                    //float angle = trunc(rawLightDirection.w) - 1000;
+                    float angle = (floor(rawLightDirection.w - 1)) / 255;
+                    float blend = frac(rawLightDirection.w);
+                    // EightBitUnpack(rawLightDirection.w, blend, angle);
+                    angle = angle * 180.0;
+                    //float blend = abs(rawLightDirection.w - 1000);
+                    //blend = frac(blend) * 10000;
+                    float theta = dot(lightDirection, normalize(-spotlightDir));
+                    float outerCone = cos(radians(angle));
+                    float spotlight = clamp(theta - outerCone,0.0,1.0);
+                // spotlight = lerp(1.0,spotlight, angle > -0.0001);
+                    atten = lerp(atten, atten*spotlight, blend);
+                    specular = lerp(specular, specular*spotlight, blend);
+                    //  atten = atten*spotlight;
+                    //  specular = specular*spotlight;
+                    //atten *= blend;
+                    //return blend;
+               }
+            #endif
 
-            finalOut += falloff * lightColor * atten * diffuseColor * specular;
+            #ifdef VRSL_GI_PROJECTOR
+                lightColor = clamp(lightColor, float3(0,0,0), float3(_VRSLGIDiffuseClamp, _VRSLGIDiffuseClamp, _VRSLGIDiffuseClamp));
+            #endif
+
+            finalOut += falloff * lightColor  * atten * diffuseColor * clamp(specular, 0.0, _VRSLGISpecularClamp);
             //finalOut += (spotlight);
             
         }

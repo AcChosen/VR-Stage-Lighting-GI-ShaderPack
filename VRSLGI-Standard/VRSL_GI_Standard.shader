@@ -20,6 +20,7 @@ Shader "VRSL/GI-Addon/Standard Shader"
 
         [Gamma] _Metallic("Metallic", Range(0.0, 1.0)) = 0.0
         _MetallicGlossMap("Metallic", 2D) = "white" {}
+        _RenderTextureMultiplier("Render Texture Multiplier", Range(1,10)) = 1
 
         [ToggleOff] _SpecularHighlights("Specular Highlights", Float) = 1.0
         [ToggleOff] _GlossyReflections("Glossy Reflections", Float) = 1.0
@@ -72,6 +73,8 @@ Shader "VRSL/GI-Addon/Standard Shader"
         [NoScaleOffset] _VRSL_LightTexture("VRSL Light Texture", 2D) = "white" {}
         [NoScaleOffset] _VRSL_LightCounter("VRSL Light Counter Texture", 2D) = "white" {}
 
+        [Toggle] _IncludeDirectionAndSpotAngle ("Include Direction And Spot Angle", Int) = 0
+
         [ToggleUI] _UseVRSLShadowMask1 ("Use VRSL Shadow Mask 1", Int) = 0
         [NoScaleOffset] _VRSLShadowMask1("VRSL GI ShadowMask 1", 2D) = "white" {}
         _UseVRSLShadowMask1RStrength("VRSL SM 1 R Strength", Range(0.0, 1.0)) = 1.0
@@ -95,6 +98,9 @@ Shader "VRSL/GI-Addon/Standard Shader"
 
         [Enum(GGX,0, Beckman,1, Blinn Phong,2)]_VRSLSpecularFunction("VRSL Specular Function", Int) = 0
 
+        _VRSLGISpecularClamp("VRSL GI Specular Clamp", Range(1.0, 50000.0)) = 10000
+        _VRSLGIDiffuseClamp("VRSL GI Diffuse Clamp", Range(1.0, 10000.0)) = 10000
+
         
 
         
@@ -113,12 +119,38 @@ Shader "VRSL/GI-Addon/Standard Shader"
 		_FixtureRotationX("Mover Tilt Offset (Blue)", Range(-180,180)) = 0
 		_FinalIntensity("Final Intensity", Range(0,1)) = 1
 		_GlobalIntensity("Global Intensity", Range(0,1)) = 1
+        
 		_UniversalIntensity ("Universal Intensity", Range (0,1)) = 1
 		_FixtureRotationOrigin("Fixture Pivot Origin", Float) = (0, 0.014709, -1.02868, 0)
 		_MaxMinPanAngle("Max/Min Pan Angle (-x, x)", Float) = 180
 		_MaxMinTiltAngle("Max/Min Tilt Angle (-y, y)", Float) = 180
 		_FixtureMaxIntensity ("Maximum Cone Intensity",Range (0,500)) = 1.0
 		[HDR]_EmissionDMX("Color", Color) = (1,1,1)
+
+
+
+
+
+
+
+
+        [ToggleUI]_AudioLinkToggle("Enable Audiolink Keyword", Int) = 0
+        [ToggleUI]_EnableAudioLink("Enable Audiolink", Int) = 0
+		 [Toggle] _EnableColorChord ("Enable Color Chord Tinting", Int) = 0
+         [Enum(Bass,0,Low Mids,1,High Mids,2,Treble,3)]_Band("Band", Float) = 0
+         _BandMultiplier("Band Multiplier", Range(1, 15)) = 1
+         _Delay("Delay", Float) = 0
+		 [Toggle] _EnableColorTextureSample ("Enable Color Texture Sampling", Int) = 0
+		 _SamplingTexture ("Texture To Sample From for Color", 2D) = "white" {}
+		 _TextureColorSampleX ("X coordinate to sample the texture from", Range(0,1)) = 0.5
+		 _TextureColorSampleY ("Y coordinate to sample the texture from", Range(0,1)) = 0.5
+		[Toggle] _EnableThemeColorSampling ("Enable Theme Color Sampling", Int) = 0
+		 [Enum(ThemeColor0,0,ThemeColor1,1,ThemeColor2,2,ThemeColor3,3)]_ThemeColorTarget ("Choose Theme Color", Float) = 0
+          _NumBands("Num Bands", Float) = 4
+          _AudioLinkEmissionMap("AudioLink Emission Map", 2D) = "white" {}
+          [HDR]_Emission("Light Color Tint", Color) = (1,1,1,1)
+
+
 
         [ToggleUI]_AreaLitToggle("Enable", Int) = 0
 		_AreaLitMask("Mask", 2D) = "white" {}
@@ -148,6 +180,8 @@ Shader "VRSL/GI-Addon/Standard Shader"
         [HideInInspector] _SrcBlend ("__src", Float) = 1.0
         [HideInInspector] _DstBlend ("__dst", Float) = 0.0
         [HideInInspector] _ZWrite ("__zw", Float) = 1.0
+
+        _GlobalIntensityBlend("Global Intensity Blend", Range(0,1)) = 1
     }
 
     CGINCLUDE
@@ -190,6 +224,7 @@ Shader "VRSL/GI-Addon/Standard Shader"
             #pragma shader_feature_local _VRSL_GLOBALLIGHTTEXTURE
             #pragma shader_feature_local _VRSL_MG_MAP
             #pragma shader_feature_local _ _VRSL_SHADOWMASK_RG _VRSL_SHADOWMASK_RGB _VRSL_SHADOWMASK_RGBA
+            #pragma shader_feature_local _VRSL_GI_ANGLES
 
             #pragma shader_feature_local _NORMALMAP
             #pragma shader_feature_local _ _ALPHATEST_ON _ALPHABLEND_ON _ALPHAPREMULTIPLY_ON
@@ -212,6 +247,8 @@ Shader "VRSL/GI-Addon/Standard Shader"
 			#pragma shader_feature_local _VRSL_MIX_MIX
 			#pragma shader_feature_local _VRSL_LEGACY_TEXTURES
 			//End VRSL Stuff
+
+            #pragma shader_feature_local _VRSL_AUDIOLINK_ON
 
 
             #pragma shader_feature_local _ _AREALIT_ON

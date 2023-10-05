@@ -3,11 +3,26 @@
 using System;
 using UnityEngine;
 using UnityEditor;
+using System.IO;
 
 // namespace VRSL
 // {
     internal class VRSL_GI_StandardShaderGUI : ShaderGUI
     {
+            public static string GetVersion()
+        {
+            string path = Application.dataPath;
+            // path = path.Replace("Assets","");
+            // path += "Packages"  + "\\" + "com.acchosen.vr-stage-lighting" + "\\";
+            //path += "Runtime" + "\\"  + "VERSION.txt";
+            path += "\\" +  "VRSL Addons" + "\\" + "VRSL-GI Shader Package" + "\\" + "VERSION.txt";
+
+            StreamReader reader = new StreamReader(path); 
+            string versionNum = reader.ReadToEnd();
+            string ver = "VR Stage Lighting ver:" + " <b><color=#b33cff>" + versionNum + "</color></b>";
+            return ver;
+    }
+        public static Texture logo = Resources.Load("VRStageLighting-Logo") as Texture;
         private enum WorkflowMode
         {
             Specular,
@@ -88,6 +103,12 @@ using UnityEditor;
         MaterialProperty detailNormalMapScale = null;
         MaterialProperty detailNormalMap = null;
         MaterialProperty uvSetSecondary = null;
+        MaterialProperty _ZTest = null;
+        MaterialProperty _ZWrite = null;
+        MaterialProperty _StencilComp = null;
+        MaterialProperty _StencilOp = null;
+        MaterialProperty _StencilFail = null;
+        MaterialProperty _StencilZFail = null;
         //MaterialProperty useVRSLGI = null;
         //MaterialProperty useVRSLGISpecular = null;
 
@@ -109,11 +130,13 @@ using UnityEditor;
 	MaterialProperty baseRotationX = null;
 	MaterialProperty finalIntensity = null;
 	MaterialProperty globalIntensity = null;
+    MaterialProperty _GlobalIntensityBlend = null;
 	MaterialProperty universalIntensity = null;
 	MaterialProperty rotationOrigin = null;
 	MaterialProperty maxMinPanAngle = null;
 	MaterialProperty maxMinTiltAngle = null;
 	MaterialProperty fixtureMaxIntensity = null;
+    MaterialProperty _RenderTextureMultiplier = null;
 	MaterialProperty dmxEmissionMapMix = null;
 	MaterialProperty dmxEmissionColor = null;
 
@@ -163,8 +186,29 @@ using UnityEditor;
     MaterialProperty _ShadowMaskActiveChannels = null;
     MaterialProperty _VRSLSpecularFunction = null;
 
+    MaterialProperty _VRSLGISpecularClamp = null;
+    MaterialProperty _VRSLGIDiffuseClamp = null;
+
     MaterialProperty _VRSLShadowMaskUVSet = null;
     MaterialProperty _VRSLGIDiffuseMode = null;
+    MaterialProperty _IncludeDirectionAndSpotAngle = null;
+
+
+    MaterialProperty _AudioLinkToggle = null;
+    MaterialProperty _EnableColorChord = null;
+    MaterialProperty _Band = null;
+    MaterialProperty _Delay = null;
+    MaterialProperty _BandMultiplier = null;
+    MaterialProperty _EnableColorTextureSample = null;
+    MaterialProperty _SamplingTexture = null;
+    MaterialProperty _TextureColorSampleX = null;
+    MaterialProperty _TextureColorSampleY = null;
+    MaterialProperty _EnableThemeColorSampling = null;
+    MaterialProperty _ThemeColorTarget = null;
+    MaterialProperty _NumBands = null;
+    MaterialProperty _AudioLinkEmissionMap = null;
+    MaterialProperty _EnableAudioLink = null;
+    MaterialProperty _Emission = null;
 	//End VRSL Stuff
 
 
@@ -237,6 +281,9 @@ using UnityEditor;
             _VRSLGIDiffuseMode = FindProperty("_VRSLGIDiffuseMode", props);
             _VRSL_LightTexture = FindProperty("_VRSL_LightTexture", props);
             _UseGlobalVRSLLightTexture = FindProperty("_UseGlobalVRSLLightTexture", props);
+            _VRSLGISpecularClamp = FindProperty("_VRSLGISpecularClamp", props);
+            _VRSLGIDiffuseClamp = FindProperty("_VRSLGIDiffuseClamp", props);
+            _IncludeDirectionAndSpotAngle = FindProperty("_IncludeDirectionAndSpotAngle", props);
             if(material.shader.name.Contains("Project"))
             {
                 _ProjectorColor = FindProperty("_ProjectorColor", props);
@@ -244,6 +291,12 @@ using UnityEditor;
                 _VRSLGIQuadLightingSystem = FindProperty("_VRSLGIQuadLightingSystem", props);
                 _VRSLGIVertexFalloff = FindProperty("_VRSLGIVertexFalloff", props);
                 _VRSLGIVertexAttenuation = FindProperty("_VRSLGIVertexAttenuation", props);
+                _ZTest = FindProperty("_ZTest", props);
+                _ZWrite = FindProperty("_ZWrite", props);
+                _StencilComp = FindProperty("_StencilComp", props);
+                _StencilOp = FindProperty("_StencilOp", props);
+                _StencilFail = FindProperty("_StencilFail", props);
+                _StencilZFail = FindProperty("_StencilZFail", props);
             }
             else
             {
@@ -302,11 +355,29 @@ using UnityEditor;
                 baseRotationX = FindProperty("_FixtureRotationX", props);
                 finalIntensity = FindProperty("_FinalIntensity", props);
                 globalIntensity = FindProperty("_GlobalIntensity", props);
+                _GlobalIntensityBlend = FindProperty("_GlobalIntensityBlend", props);
                 universalIntensity = FindProperty("_UniversalIntensity", props);
                 rotationOrigin = FindProperty("_FixtureRotationOrigin", props);
                 maxMinPanAngle = FindProperty("_MaxMinPanAngle", props);
                 maxMinTiltAngle = FindProperty("_MaxMinTiltAngle", props);
                 fixtureMaxIntensity = FindProperty("_FixtureMaxIntensity", props);
+                _RenderTextureMultiplier = FindProperty("_RenderTextureMultiplier", props);
+
+                _AudioLinkToggle = FindProperty("_AudioLinkToggle", props);
+                _EnableColorChord = FindProperty("_EnableColorChord", props);
+                _Band = FindProperty("_Band", props);
+                _BandMultiplier = FindProperty("_BandMultiplier", props);
+                _Delay = FindProperty("_Delay", props);
+                _EnableColorTextureSample = FindProperty("_EnableColorTextureSample", props);
+                _SamplingTexture = FindProperty("_SamplingTexture", props);
+                _TextureColorSampleX = FindProperty("_TextureColorSampleX", props);
+                _TextureColorSampleY = FindProperty("_TextureColorSampleY", props);
+                _EnableThemeColorSampling = FindProperty("_EnableThemeColorSampling", props);
+                _ThemeColorTarget = FindProperty("_ThemeColorTarget", props);
+                _NumBands = FindProperty("_NumBands", props);
+                _AudioLinkEmissionMap = FindProperty("_AudioLinkEmissionMap", props);
+                _EnableAudioLink = FindProperty("_EnableAudioLink", props);
+                _Emission = FindProperty("_Emission", props);
             }
             //	mirrorToggle = FindProperty("_MirrorToggle", props);
                 areaLitToggle = FindProperty("_AreaLitToggle", props);
@@ -442,7 +513,158 @@ using UnityEditor;
             return input == 1.0f;
         }
 
-        public void ShaderPropertiesGUI(Material material)
+        GUIStyle AlignRight()
+        {
+            GUIStyle x = new GUIStyle("label");
+            x.alignment = TextAnchor.MiddleRight;
+            x.fontSize = 10;
+            return x;
+        }
+        GUIStyle AlignLeft()
+        {
+            GUIStyle x = new GUIStyle("label");
+            x.alignment = TextAnchor.MiddleLeft;
+            x.fontSize = 10;
+            return x;
+        }
+        void SliderStrengthUnderLables()
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUI.indentLevel++;
+            EditorGUILayout.LabelField("Less Map Strength", AlignRight());
+            EditorGUILayout.LabelField("", "More Map Strength", AlignRight(), GUILayout.MinWidth(100f));
+            EditorGUI.indentLevel--;
+            EditorGUILayout.EndHorizontal();
+        }
+
+    void GUILine(float height = 0f)
+    {
+        GUILine(Color.black, height);
+    }
+
+    void GUILine(Color color, float height = 0f)
+    {
+        Rect position = GUILayoutUtility.GetRect(0f, float.MaxValue, height, height, LineStyle);
+
+        if (Event.current.type == EventType.Repaint)
+        {
+            Color orgColor = GUI.color;
+            GUI.color = orgColor * color;
+            LineStyle.Draw(position, false, false, false, false);
+            GUI.color = orgColor;
+        }
+    }
+    
+    static public GUIStyle _LineStyle;
+    static public GUIStyle LineStyle
+    {
+        get
+        {
+            if (_LineStyle == null)
+            {
+                _LineStyle = new GUIStyle();
+                _LineStyle.normal.background = EditorGUIUtility.whiteTexture;
+                _LineStyle.stretchWidth = true;
+            }
+
+            return _LineStyle;
+        }
+    }
+    void ShurikenHeader(string title)
+    {
+        DrawShuriken(title, new Vector2(6f, -2f), 22);
+    }
+
+    void ShurikenHeaderCentered(string title)
+    {
+        DrawShurikenCenteredTitle(title, new Vector2(0f, -2f), 22);
+    }
+
+    private static Rect DrawShurikenPartingLineText(string title, Vector2 contentOffset, int HeaderHeight)
+    {
+        var style = new GUIStyle("ShurikenModuleTitle");
+        style.font = new GUIStyle(EditorStyles.boldLabel).font;
+        style.border = new RectOffset(15, 7, 4, 4);
+        style.fixedHeight = HeaderHeight;
+        style.contentOffset = contentOffset;
+        style.alignment = TextAnchor.MiddleCenter;
+        var rect = GUILayoutUtility.GetRect(16f, HeaderHeight, style);
+
+        GUI.Box(rect, title, style);
+        return rect;
+    }
+
+    void DrawShurikenPartingLineText(string title)
+    {
+        DrawShurikenPartingLineText(title, new Vector2(6f, -2f), 22);
+    }
+    void DrawLogo()
+    {
+        ///GUILayout.BeginArea(new Rect(0,0, Screen.width, Screen.height));
+        // GUILayout.FlexibleSpace();
+        //GUI.DrawTexture(pos,logo,ScaleMode.ScaleToFit);
+        //EditorGUI.DrawPreviewTexture(new Rect(0,0,400,150), logo);
+        Vector2 contentOffset = new Vector2(0f, -2f);
+        GUIStyle style = new GUIStyle(EditorStyles.label);
+        style.fixedHeight = 200;
+        //style.fixedWidth = 300;
+        style.contentOffset = contentOffset;
+        style.alignment = TextAnchor.MiddleCenter;
+        var rect = GUILayoutUtility.GetRect(300f, 190f, style);
+        //GUILayout.Label(logo,style, GUILayout.MaxWidth(500), GUILayout.MaxHeight(200));
+        GUI.Box(rect, logo,style);
+        //GUILayout.Label(logo);
+        // GUILayout.FlexibleSpace();
+        //GUILayout.EndArea();
+    }
+
+    Rect DrawShuriken(string title, Vector2 contentOffset, int HeaderHeight)
+    {
+        var style = new GUIStyle("ShurikenModuleTitle");
+        style.font = new GUIStyle(EditorStyles.boldLabel).font;
+        style.border = new RectOffset(15, 7, 4, 4);
+        style.fixedHeight = HeaderHeight;
+        style.contentOffset = contentOffset;
+        var rect = GUILayoutUtility.GetRect(16f, HeaderHeight, style);
+        GUI.Box(rect, title, style);
+        return rect;
+    }
+
+    /// indent support
+    Rect DrawShuriken(string title, Vector2 contentOffset, int HeaderHeight, int indent)
+    {
+        var style = new GUIStyle("ShurikenModuleTitle");
+        style.font = new GUIStyle(EditorStyles.boldLabel).font;
+        style.border = new RectOffset(15, 7, 4, 4);
+        style.fixedHeight = HeaderHeight;
+        style.contentOffset = contentOffset;
+        var rect = GUILayoutUtility.GetRect(16f, HeaderHeight, style);
+        rect = new Rect(rect.x + indent, rect.y, rect.width - indent, rect.height);
+        GUI.Box(rect, title, style);
+        return rect;
+    }
+
+    Rect DrawShurikenCenteredTitle(string title, Vector2 contentOffset, int HeaderHeight)
+    {
+        var style = new GUIStyle("ShurikenModuleTitle");
+        style.font = new GUIStyle(EditorStyles.boldLabel).font;
+        style.border = new RectOffset(15, 7, 4, 4);
+        style.fixedHeight = HeaderHeight;
+        style.contentOffset = contentOffset;
+        style.alignment = TextAnchor.MiddleCenter;
+        var rect = GUILayoutUtility.GetRect(16f, HeaderHeight, style);
+
+        GUI.Box(rect, title, style);
+        return rect;
+    }
+    void PartingLine()
+    {
+        GUILayout.Space(5);
+        GUILine(new Color(0.5f, 0.5f, 0.5f), 1.5f);
+        GUILayout.Space(5);
+    }
+
+        void ShaderPropertiesGUI(Material material)
         {
             // Use default labelWidth
             EditorGUIUtility.labelWidth = 0f;
@@ -452,11 +674,11 @@ using UnityEditor;
             // Detect any changes to the material
             EditorGUI.BeginChangeCheck();
             {
-                VRSLStyles.DrawLogo();
-                VRSLStyles.ShurikenHeaderCentered(VRSLStyles.GetVersion());
+                DrawLogo();
+                ShurikenHeaderCentered(GetVersion());
                // VRSLStyles.ShurikenHeaderCentered(GetShaderType());
-                VRSLStyles.PartingLine();
-                VRSLStyles.DepthPassWarning();
+                PartingLine();
+                //DepthPassWarning();
                 Space10();
                 blendModeChanged = BlendModePopup();
 
@@ -526,11 +748,14 @@ using UnityEditor;
                         EditorGUI.indentLevel++;
                         m_MaterialEditor.ShaderProperty(_VRSLInvertSmoothnessMap, "Invert Smoothness (To Roughness)");
                         
-
+                        
                         s = smoothnessDescriptor;
                        // bool invertSmoothness = EditorGUILayout.Toggle("Invert Smoothness",_VRSLInvertSmoothnessMap.floatValue == -1.0f);
                       //  material.SetFloat("_VRSLInvertSmoothnessMap", invertSmoothness ? -1.0f : 1.0f);
-                        m_MaterialEditor.ShaderProperty(_VRSLGlossMapStrength, smoothnessDescriptor + " Map Mix");
+                        m_MaterialEditor.ShaderProperty(_VRSLGlossMapStrength, smoothnessDescriptor + " Map Blend");
+
+                        SliderStrengthUnderLables();
+
                         EditorGUI.indentLevel--;
                         m_MaterialEditor.ShaderProperty(_VRSLMetallicChannel, "Metallic Channel");
                         SetVRSLMetalMapKeyword(Mathf.RoundToInt(_VRSLMetallicChannel.floatValue), material);
@@ -538,18 +763,22 @@ using UnityEditor;
                         m_MaterialEditor.ShaderProperty(_VRSLInvertMetallicMap, "Invert Metallics");
                        // bool invertMetallics= EditorGUILayout.Toggle("Invert Metallics",_VRSLInvertMetallicMap.floatValue == -1.0f);
                       //  material.SetFloat("_VRSLInvertMetallicMap", invertMetallics ? -1.0f : 1.0f);
-                        m_MaterialEditor.ShaderProperty(_VRSLMetallicMapStrength, "Metallic Map Mix");
+                        m_MaterialEditor.ShaderProperty(_VRSLMetallicMapStrength, "Metallic Map Blend");
+                        SliderStrengthUnderLables();
                         EditorGUI.indentLevel--;
 
 
                         Space8();
                     }
-                    float g = EditorGUILayout.Slider("VRSL Specular Base " + s,Mathf.InverseLerp(1.0f, 0.1f, _VRSLGlossiness.floatValue),0.0f, 1.0f);
+                    float g = EditorGUILayout.Slider("VRSL Base " + s,Mathf.InverseLerp(1.0f, 0.1f, _VRSLGlossiness.floatValue),0.0f, 1.0f);
                     _VRSLGlossiness.floatValue = Mathf.Lerp(1.0f, 0.1f, g);
+                    m_MaterialEditor.ShaderProperty(_VRSLSpecularStrength, "VRSL Base Metallic");
                     EditorGUILayout.Space(4);
-                    m_MaterialEditor.ShaderProperty(_VRSLSpecularStrength, "VRSL Metallic/Specular Mixture");
+                    
                     m_MaterialEditor.ShaderProperty(_VRSLSpecularMultiplier,"VRSL Specular Multiplier");
                     m_MaterialEditor.ShaderProperty(_VRSLSpecularShine, "Specular Shine Power");
+                    Space2();
+                    m_MaterialEditor.ShaderProperty(_VRSLGISpecularClamp, "Specular Clamp (Sets Max Brightness)");
                     });});ToggleGroupEnd();
                     if(material.shader.name.Contains("Project") == false)
                     {
@@ -638,10 +867,15 @@ using UnityEditor;
                     m_MaterialEditor.ShaderProperty(_VRSLGIDiffuseMode, "Diffuse Mode");
                     m_MaterialEditor.ShaderProperty(_VRSLGIStrength,"Strength");
                     m_MaterialEditor.ShaderProperty(_VRSLDiffuseMix,"Diffuse Mix");
+                    Space2();
+                   
+                    Space2();
+                    m_MaterialEditor.ShaderProperty(_IncludeDirectionAndSpotAngle, "Support Directional GI");
                 if(material.shader.name.Contains("Project"))
                 {
                     m_MaterialEditor.ShaderProperty(_ProjectorColor, "VRSL Projector Color");
                     m_MaterialEditor.ShaderProperty(_VRSLProjectorStrength, "VRSL Projector Strength");
+                    m_MaterialEditor.ShaderProperty(_VRSLGIDiffuseClamp, "Max Brightness");
                 }
                 
                 });});ToggleGroupEnd();
@@ -650,8 +884,10 @@ using UnityEditor;
                 {
                     DoVRSLArea(material,m_MaterialEditor);
                     Space5();
+                    DoAudioLinkArea(material,m_MaterialEditor);
+                    Space5();
                 }
-
+                
 
 			// AreaLit
                 if (Shader.Find("AreaLit/Standard") != null){
@@ -665,7 +901,7 @@ using UnityEditor;
                     material.SetInt("_AreaLitToggle", 0);
                     material.DisableKeyword("_AREALIT_ON");
                 }
-
+                Space5();
                 			// LTCGI
                 if (Shader.Find("LTCGI/Blur Prefilter") != null){
                     // bool ltcgiFoldout = Foldouts.DoSmallFoldoutBold(foldouts, material, me, "LTCGI");
@@ -684,7 +920,16 @@ using UnityEditor;
                     material.DisableKeyword("LTCGI_DIFFUSE_OFF");
                     material.DisableKeyword("LTCGI_SPECULAR_OFF");
                 }
-
+                if(material.shader.name.Contains("Project") == true)
+                {
+                    m_MaterialEditor.ShaderProperty(_StencilComp, "Stencil Comp");
+                    m_MaterialEditor.ShaderProperty(_StencilOp, "Stencil Operation");
+                    m_MaterialEditor.ShaderProperty(_StencilFail, "Stencil Fail");
+                    m_MaterialEditor.ShaderProperty(_ZWrite, "Z Write");
+                    m_MaterialEditor.ShaderProperty(_ZTest, "Z Test");
+                    m_MaterialEditor.ShaderProperty(_StencilZFail, "Stencil Z Fail");
+                    //m_MaterialEditor.ShaderProperty(_ZTest, "Z Test");
+                }
                 // Third properties
                 GUILayout.Label(Styles.forwardText, EditorStyles.boldLabel);
                 if (highlights != null)
@@ -708,7 +953,7 @@ using UnityEditor;
             m_MaterialEditor.DoubleSidedGIField();
         }
 
-        internal void DetermineWorkflow(MaterialProperty[] props)
+        void DetermineWorkflow(MaterialProperty[] props)
         {
             if (FindProperty("_SpecGlossMap", props, false) != null && FindProperty("_SpecColor", props, false) != null)
                 m_WorkflowMode = WorkflowMode.Specular;
@@ -862,6 +1107,9 @@ using UnityEditor;
 					me.ShaderProperty(universalIntensity, "Universal Intensity");
 					me.ShaderProperty(finalIntensity, "Final Intensity");
 					me.ShaderProperty(globalIntensity, "Global Intensity");
+                    EditorGUI.indentLevel++;
+                    me.ShaderProperty(_GlobalIntensityBlend, "Global Intensity Blend");
+                    EditorGUI.indentLevel--;
 					me.ShaderProperty(fixtureMaxIntensity, "Fixture Max Intensity");
 					me.ShaderProperty(strobeToggle, "Enable Strobe");
 				});
@@ -940,6 +1188,56 @@ using UnityEditor;
 				me.ShaderProperty(ltcgiStrength, "Strength");
 				me.ShaderProperty(ltcgi_spec_off, "Disable Specular");
 				me.ShaderProperty(ltcgi_diffuse_off, "Disable Diffuse");
+				SpaceN2();
+			});
+			ToggleGroupEnd();
+		});
+        }
+
+        void DoAudioLinkArea(Material material, MaterialEditor me){
+		PropertyGroup(()=>{
+			me.ShaderProperty(_AudioLinkToggle, "Enable VRSL AudioLink");
+			ToggleGroup(_AudioLinkToggle.floatValue == 0);
+			PropertyGroupLayer(()=>{
+				SpaceN2();
+                me.TexturePropertySingleLine(new GUIContent("AudioLink Emission Map/Mask", "AudioLink Emission Map/Mask"), _AudioLinkEmissionMap);
+                me.ShaderProperty(_Emission, "AudioLink Emission Color");
+                me.ShaderProperty(_EnableAudioLink, "Enable AudioLink");
+				me.ShaderProperty(_Band, "Band");
+                me.ShaderProperty(_BandMultiplier,"Band Multiplier");
+				//me.ShaderProperty(_NumBands, "Number Of Bands");
+				me.ShaderProperty(_Delay, "Delay");
+                Space8();
+                me.ShaderProperty(universalIntensity, "Universal Intensity");
+                me.ShaderProperty(finalIntensity, "Final Intensity");
+                me.ShaderProperty(globalIntensity, "Global Intensity");
+                EditorGUI.indentLevel++;
+                me.ShaderProperty(_GlobalIntensityBlend, "Global Intensity Blend");
+                EditorGUI.indentLevel--;
+                me.ShaderProperty(fixtureMaxIntensity, "Fixture Max Intensity");
+                
+                Space8();
+                me.ShaderProperty(_EnableColorChord, "Enable Color Chord");
+                //Space2();
+                me.ShaderProperty(_EnableColorTextureSample, "Enable Texture Sampling");
+                if(_EnableColorTextureSample.floatValue == 1f)
+                {
+                   EditorGUI.indentLevel++;
+                   me.TexturePropertySingleLine(new GUIContent("Texture To Sample From", "Texture To Sample From"), _SamplingTexture);
+                   me.ShaderProperty(_TextureColorSampleX, "X Coordinate (UV)");
+                   me.ShaderProperty(_TextureColorSampleY, "Y Coordinate (UV)");
+                   me.ShaderProperty(_RenderTextureMultiplier, "Render Texture Multiplier");
+                   EditorGUI.indentLevel--;
+                   Space8();
+                }
+                
+                me.ShaderProperty(_EnableThemeColorSampling, "Enable Theme Colors");
+                if(_EnableThemeColorSampling.floatValue == 1f)
+                {
+                   EditorGUI.indentLevel++;
+                   me.ShaderProperty(_ThemeColorTarget, "Theme Color Target");
+                   EditorGUI.indentLevel--;
+                }
 				SpaceN2();
 			});
 			ToggleGroupEnd();
@@ -1146,13 +1444,16 @@ using UnityEditor;
             int minRenderQueue = -1;
             int maxRenderQueue = 5000;
             int defaultRenderQueue = -1;
+            bool isProjector = material.shader.name.Contains("Project");
             switch (blendMode)
             {
                 case BlendMode.Opaque:
                     material.SetOverrideTag("RenderType", "");
                     material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
                     material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                    material.SetInt("_ZWrite", 1);
+                    if(!isProjector){
+                        material.SetInt("_ZWrite", 1);
+                    }
                     material.DisableKeyword("_ALPHATEST_ON");
                     material.DisableKeyword("_ALPHABLEND_ON");
                     material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
@@ -1164,7 +1465,9 @@ using UnityEditor;
                     material.SetOverrideTag("RenderType", "TransparentCutout");
                     material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
                     material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                    material.SetInt("_ZWrite", 1);
+                    if(!isProjector){
+                        material.SetInt("_ZWrite", 1);
+                    }
                     material.EnableKeyword("_ALPHATEST_ON");
                     material.DisableKeyword("_ALPHABLEND_ON");
                     material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
@@ -1176,7 +1479,9 @@ using UnityEditor;
                     material.SetOverrideTag("RenderType", "Transparent");
                     material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
                     material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                    material.SetInt("_ZWrite", 0);
+                    if(!isProjector){
+                        material.SetInt("_ZWrite", 0);
+                    }
                     material.DisableKeyword("_ALPHATEST_ON");
                     material.EnableKeyword("_ALPHABLEND_ON");
                     material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
@@ -1188,7 +1493,9 @@ using UnityEditor;
                     material.SetOverrideTag("RenderType", "Transparent");
                     material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
                     material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                    material.SetInt("_ZWrite", 0);
+                    if(!isProjector){
+                        material.SetInt("_ZWrite", 0);
+                    }
                     material.DisableKeyword("_ALPHATEST_ON");
                     material.DisableKeyword("_ALPHABLEND_ON");
                     material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
@@ -1261,6 +1568,7 @@ using UnityEditor;
             SetKeyword(material,"_VRSL_GI", material.GetFloat("useVRSLGI") == 1.0f);
             SetKeyword(material,"_VRSL_GI_SPECULARHIGHLIGHTS", material.GetFloat("useVRSLGISpecular") == 1.0f);
             SetKeyword(material, "_VRSL_GLOBALLIGHTTEXTURE", material.GetFloat("_UseGlobalVRSLLightTexture") == 1.0f);
+            SetKeyword(material, "_VRSL_GI_ANGLES", material.GetFloat("_IncludeDirectionAndSpotAngle") == 1.0f);
             SetDiffuseMode(material,material.GetInt("_VRSLGIDiffuseMode"));
             //SetKeyword(material, "_VRSL_DIFFUSETINT", material.GetFloat("_VRSLGIDiffuseMode") == 1.0f);
             //VRSL Stuff
@@ -1281,6 +1589,7 @@ using UnityEditor;
                 SetKeyword(material, "_VRSL_SHADOWMASK2", material.GetInt("_UseVRSLShadowMask2") == 1);
                 SetKeyword(material, "_VRSL_SHADOWMASK3", material.GetInt("_UseVRSLShadowMask3") == 1);
                 SetKeyword(material,"_VRSL_MG_MAP",material.GetInt("_UseVRSLMetallicGlossMap") == 1);
+                SetKeyword(material, "_VRSL_AUDIOLINK_ON", material.GetInt("_AudioLinkToggle") == 1);
             }
             else
             {
@@ -1290,6 +1599,7 @@ using UnityEditor;
                 SetKeyword(material, "LTCGI", ltcgiToggle == 1);
 		        SetKeyword(material, "LTCGI_DIFFUSE_OFF", material.GetInt("_LTCGI_DIFFUSE_OFF") == 1 && ltcgiToggle == 1);
 		        SetKeyword(material, "LTCGI_SPECULAR_OFF", material.GetInt("_LTCGI_SPECULAR_OFF") == 1 && ltcgiToggle == 1);
+                
             //End VRSL Stuff
         }
 

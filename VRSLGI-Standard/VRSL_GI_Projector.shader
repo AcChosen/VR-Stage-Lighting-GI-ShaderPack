@@ -19,6 +19,8 @@ Properties {
 	[Enum(Squared, 0, Linear, 1, Modified, 2)] _VRSLGIVertexFalloff ("Falloff (use Modified if unsure)", Int) = 2
 	[HideInInspector]_VRSLGIVertexAttenuation ("Falloff", Range(0, 10)) = 1
 
+	[Toggle] _IncludeDirectionAndSpotAngle ("Include Direction And Spot Angle", Int) = 0
+
 
 	[HDR] _ProjectorColor("Projector Color", Color) = (1,1,1,1)
 
@@ -85,13 +87,18 @@ Properties {
         _LTCGIStrength("LTCGI Strength", Float) = 1
 
 		[NoScaleOffset] _VRSL_LightTexture("VRSL Light Texture", 2D) = "white" {}
-		[NoScaleOffset] _VRSL_LightCounter("VRSL Light Counter Texture", 2D) = "white" {}		
+		[NoScaleOffset] _VRSL_LightCounter("VRSL Light Counter Texture", 2D) = "white" {}	
+
+        _VRSLGISpecularClamp("VRSL GI Specular Clamp", Range(1.0, 50000.0)) = 10000
+        _VRSLGIDiffuseClamp("VRSL GI Diffuse Clamp", Range(1.0, 10000.0)) = 10000
 
 	// Blending state
 	[HideInInspector] _Mode ("__mode", Float) = 0.0
 	// [HideInInspector] _SrcBlend ("__src", Float) = 1.0
 	// [HideInInspector] _DstBlend ("__dst", Float) = 0.0
 	// [HideInInspector] _ZWrite ("__zw", Float) = 1.0
+
+	_GlobalIntensityBlend("Global Intensity Blend", Range(0,1)) = 1
 }
 CGINCLUDE
 #define UNITY_SETUP_BRDF_INPUT MetallicSetup
@@ -99,6 +106,12 @@ ENDCG
  CustomEditor "VRSL_GI_StandardShaderGUI"
 SubShader {
 	Tags { "Queue"="Transparent-1" "RenderType"="Transparent" }
+		Stencil
+		{
+			Ref 148
+			Comp NotEqual
+			Pass Keep
+		}
 	Pass {
 		Name "FORWARD"
 		Tags { "LightMode"="ForwardBase" }
@@ -117,6 +130,7 @@ SubShader {
 		#pragma shader_feature_local _ _VRSL_DIFFUSETINT _VRSL_DIFFUSETOON
 		#pragma shader_feature_local _VRSL_GI_ENFORCELIMIT
 		#pragma shader_feature_local _VRSL_GLOBALLIGHTTEXTURE
+		#pragma shader_feature_local _VRSL_GI_ANGLES
 
 		#define VERTEXLIGHT_ON
 		

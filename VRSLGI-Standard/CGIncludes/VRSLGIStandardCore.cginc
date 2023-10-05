@@ -13,8 +13,6 @@
 #include "VRSLGIStandardBRDF.cginc"
 
 #include "AutoLight.cginc"
-
-#include "Assets/VRSL Addons/VRSL-GI Shader Package/VRSLGI-Functions.cginc"
 //-------------------------------------------------------------------------------------
 // counterpart for NormalizePerPixelNormal
 // skips normalization per-vertex and expects normalization to happen per-pixel
@@ -397,6 +395,9 @@ struct VertexOutputForwardBase
             #ifdef _VRSL_GI_ENFORCELIMIT
                 nointerpolation float4 QuadLightPosition[4]         :TEXCOORD12;
                 nointerpolation float4 QuadLightColor[4]             :COLOR1;
+                #if _VRSL_GI_ANGLES
+                    nointerpolation float4 QuadLightDirection[4]      :TEXCOORD20;
+                #endif
                 float3 vertexNormal                 :TEXCOORD16;
                 float4 meshWorldPos                 :TEXCOORD17;
                 int finalLightCount                 :TEXCOORD18;
@@ -408,6 +409,10 @@ struct VertexOutputForwardBase
     #endif
 
     float4 color                          : COLOR0;
+
+    #if _VRSL_AUDIOLINK_ON
+        nointerpolation float3 audioLinkColor       : TEXCOORD19;
+    #endif
     
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
@@ -478,6 +483,9 @@ VertexOutputForwardBase vertForwardBase (VertexInput v)
     #if VRSL_ENABLED
         o.dmxColor = DMXEmission(o.tex.xy);
     #endif
+    #if _VRSL_AUDIOLINK_ON
+        o.audioLinkColor = GetAudioLinkEmissionColor().xyz;
+    #endif
     #ifdef _VRSL_GI
        #ifndef VRSL_GI_PROJECTOR
        o.shadowMaskUV = VRSLShadowMaskCoords(v);
@@ -492,6 +500,12 @@ VertexOutputForwardBase vertForwardBase (VertexInput v)
                 o.QuadLightColor[1] = float4(0,0,0,0);
                 o.QuadLightColor[2] = float4(0,0,0,0);
                 o.QuadLightColor[3] = float4(0,0,0,0);
+                #if _VRSL_GI_ANGLES
+                    o.QuadLightDirection[0] = float4(0,0,0,0);
+                    o.QuadLightDirection[1] = float4(0,0,0,0);
+                    o.QuadLightDirection[2] = float4(0,0,0,0);
+                    o.QuadLightDirection[3] = float4(0,0,0,0);
+                #endif
                 #include "VRSLGIQuadLightFunctions.cginc"
                 o.QuadLightPosition[0] = qLightPositions[0];
                 o.QuadLightPosition[1] = qLightPositions[1];
@@ -501,6 +515,12 @@ VertexOutputForwardBase vertForwardBase (VertexInput v)
                 o.QuadLightColor[1] = qLightColors[1];
                 o.QuadLightColor[2] = qLightColors[2];
                 o.QuadLightColor[3] = qLightColors[3];
+                #if _VRSL_GI_ANGLES
+                    o.QuadLightDirection[0] = qLightDirections[0];
+                    o.QuadLightDirection[1] = qLightDirections[1];
+                    o.QuadLightDirection[2] = qLightDirections[2];
+                    o.QuadLightDirection[3] = qLightDirections[3];
+                #endif
                 o.vertexNormal = normalWorld;
                 o.finalLightCount = lightCount;
                 
@@ -552,6 +572,12 @@ half4 fragForwardBaseProj (VertexOutputForwardBase i, bool frontFace)
             ld.colors[1] = i.QuadLightColor[1];
             ld.colors[2] = i.QuadLightColor[2];
             ld.colors[3] = i.QuadLightColor[3];
+            #if _VRSL_GI_ANGLES
+                ld.directions[0] = i.QuadLightDirection[0];
+                ld.directions[1] = i.QuadLightDirection[1];
+                ld.directions[2] = i.QuadLightDirection[2];
+                ld.directions[3] = i.QuadLightDirection[3];
+            #endif
             c.rgb += VRSLGI_QuadVertexLighting(ld,
             s.posWorld, 
             i.vertexNormal.xyz, 
@@ -672,6 +698,12 @@ half4 fragForwardBaseInternal (VertexOutputForwardBase i, bool frontFace)
             c.rgb += lerp(emissionMap, emissionMap * i.dmxColor, mixture);
         #endif
     #endif
+
+    #if _VRSL_AUDIOLINK_ON
+        float3 audioLinkEmissionMap = SampleTexture(_AudioLinkEmissionMap, i.tex.xy);
+        c.rgb += (i.audioLinkColor * audioLinkEmissionMap);
+    #endif
+    
 
     #if _AREALIT_ON
         float3 areaLitColor = s.diffColor * diffTerm + s.specColor * specTerm;
