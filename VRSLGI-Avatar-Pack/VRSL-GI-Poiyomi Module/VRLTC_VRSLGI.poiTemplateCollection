@@ -1,0 +1,273 @@
+#T#PoiVRSLGIProperties
+//ifex _VRSLGIEnabled!=1
+[HideInInspector] m_start_VRSLGI ("VRSLGI--{reference_property:_VRSLGIEnabled}", Float) = 0
+
+[HideInInspector] [ThryToggle(POI_VRSLGI)]_VRSLGIEnabled ("VRSL GI Enabled", Float) = 0
+[Helpbox(1)] _VRSLGI_Attribution ("This section uses VRSLGI by AcChosen, click for 'github.com/AcChosen/VR-Stage-Lighting-GI-ShaderPack'--{onClick:{type:URL,data:https://github.com/AcChosen/VR-Stage-Lighting-GI-ShaderPack}}", Float) = 0
+
+[Header(Tints)][ToggleUI] _VRSLGI_AnimToggle ("Anim Toggle", Int) = 1
+_VRSLGI_DiffuseColor ("Diffuse Tint", Color) = (1, 1, 1, 1)
+// [HideInInspector][ThryWideEnum(Off, 0, Theme Color 0, 1, Theme Color 1, 2, Theme Color 2, 3, Theme Color 3, 4, ColorChord 0, 5, ColorChord 1, 6, ColorChord 2, 7, ColorChord 3, 8, AL Theme 0, 9, AL Theme 1, 10, AL Theme 2, 11, AL Theme 3, 12)] _VRSLGI_DiffuseColorThemeIndex ("", Int) = 0
+_VRSLGI_SpecularColor ("Specular Tint", Color) = (1, 1, 1, 1)
+// [HideInInspector][ThryWideEnum(Off, 0, Theme Color 0, 1, Theme Color 1, 2, Theme Color 2, 3, Theme Color 3, 4, ColorChord 0, 5, ColorChord 1, 6, ColorChord 2, 7, ColorChord 3, 8, AL Theme 0, 9, AL Theme 1, 10, AL Theme 2, 11, AL Theme 3, 12)] _VRSLGI_SpecularColorThemeIndex ("", Int) = 0
+[Space(15)]
+[Header(Diffuse)][ThryToggle(POI_VRSLGI_TOON)] _VRSLGI_UseToonShading ("Use Stylized Shading", Int) = 0
+_VRSLGIClampShadow("VRSL GI Shadow Clamp Amount--{condition_showS:(_VRSLGI_UseToonShading==0)}", Range(0.0, 1.0)) = 0.3
+
+
+[HideInInspector] g_start_VRSLGIMultilayerMath1stLayer ("Stylized Shading Properties--{draw_border:true, condition_showS:(_VRSLGI_UseToonShading==1)}", Float) = 0
+//_VRSLGIShadowColor ("Color--{condition_showS:(_VRSLGI_UseToonShading==1)}", Color) = (0.7, 0.75, 0.85, 1.0)
+_VRSLGIShadowBorder ("Border--{condition_showS:(_VRSLGI_UseToonShading==1)}", Range(0, 1)) = 0.5
+_VRSLGIShadowBlur ("Blur--{condition_showS:(_VRSLGI_UseToonShading==1)}", Range(0, 1)) = 0.1
+//_VRSLGIShadowReceive ("Receive Shadow--{condition_showS:(_VRSLGI_UseToonShading==1)}", Range(0, 1)) = 0
+_VRSLGIShadowStrength ("Shadow Strength--{condition_showS:(_VRSLGI_UseToonShading==1)}", Range(0, 1)) = 1
+[HideInInspector] g_end_VRSLGIMultilayerMath1stLayer ("Toon Shading Properties--{draw_border:true}", Float) = 0
+
+_VRSLGIDiffuseClampAmount("VRSL GI Diffuse Clamp Amount", Range(1.0, 10.0)) = 2.0
+
+
+
+[Space(15)]
+[Header(Specular)][ThryToggle(POI_VRSLGI_SPECULARHIGHLIGHTS)]_VRSLGI_UseSpecular ("VRSL GI Specular Enabled", Float) = 0
+[Helpbox(1)] _VRSLGI_SpecularInfo ("Please use the G and A channels of the Packed Map in the Reflections & Specular section for Smoothness Maps and Specular Masks. '--{condition_showS:(_VRSLGI_SmoothnessMapBlend>0 || _VRSLGI_SpecMapBlend>0)}", Float) = 0
+
+// [ToggleUI] _VRSLGI_UsePBR ("Use R&S's Smoothness", Int) = 1
+[ToggleUI]_VRSLGI_SmoothnessMapBlend ("Use Smoothness Map--{condition_showS:(_VRSLGI_UseSpecular==1)}", Int) = 1
+_VRSLGI_Smoothness ("Smoothness--{condition_showS:(_VRSLGI_UseSpecular==1) && (_VRSLGI_SmoothnessMapBlend==0)}", Range(0, 1)) = 0.0
+[ToggleUI]_VRSLGI_SpecMapBlend ("Use Specular Mask--{condition_showS:(_VRSLGI_UseSpecular==1)}", Int) = 1   
+_VRSLSpecularMultiplier("Specular Multiplier--{condition_showS:(_VRSLGI_UseSpecular==1)}", Range(0.01, 20)) = 1.0
+
+[Space(15)]
+[Header(Global)]
+_VRSLGIStrength("GI Base Strength", Range(0.1, 500)) = 1.0
+_VRSLGIStrengthMultiplier("GI Overall Multiplier", Range(0.01, 50)) = 1.0
+_VRSLGIHighlightClampAmount("VRSL GI Overall Clamp Amount", Range(1.0, 10.0)) = 2.0
+
+
+[HideInInspector] m_end_VRSLGI ("VRSLGI", Float) = 0
+
+//endex
+#T#PoiVRSLGIKeywords
+//ifex _VRSLGIEnabled!=1
+#pragma shader_feature_local POI_VRSLGI
+#pragma shader_feature_local POI_VRSLGI_SPECULARHIGHLIGHTS
+#pragma shader_feature_local POI_VRSLGI_TOON
+//endex
+#T#PoiVRSLGIVariables
+//ifex _VRSLGIEnabled!=1
+#ifdef POI_VRSLGI
+    float4 _VRSLGI_DiffuseColor;
+    float4 _VRSLGI_SpecularColor;
+    float _VRSLGI_Smoothness;
+    int _VRSLGI_SpecMapBlend;
+    int _VRSLGI_SmoothnessMapBlend;
+    // int _VRSLGI_UsePBR;
+    int _VRSLGI_AnimToggle;
+    int _VRSLGI_UseSpecular;
+    int _VRSLGI_UseToonShading;
+    float _VRSLGIStrengthMultiplier;
+    float _VRSLGIStrength;
+    float _VRSLSpecularMultiplier;
+    float _VRSLGIClampShadow;
+    float _VRSLGIHighlightClampAmount;
+    float _VRSLGIDiffuseClampAmount;
+
+   // float4 _VRSLGIShadowColor;
+    float _VRSLGIShadowBorder;
+    float _VRSLGIShadowBlur;
+    //float _VRSLGIShadowReceive;
+    float _VRSLGIShadowStrength;
+#endif
+//endex
+#T#PoiVRSLGIFunction
+//ifex _VRSLGIEnabled!=1
+#ifdef POI_VRSLGI
+    #ifdef UNITY_PASS_FORWARDBASE
+        Texture2D   _Udon_VRSL_GI_LightTexture;
+
+        int VRSLGI_GetLightCountData()
+        {
+                int lightCount = _Udon_VRSL_GI_LightTexture.Load( int3(0, 2, 0) );
+            return lightCount;
+        }
+        float4 VRSLGI_GetLightColorData(int lightIndex)
+        {
+                #if _VRSL_GI_ANGLES
+                        float4 rawLightColor = _Udon_VRSL_GI_LightTexture.Load( int3(lightIndex, 0, 0) );
+                #else
+                        float4 rawLightColor = _Udon_VRSL_GI_LightTexture.Load( int3(lightIndex, 0, 0) );   
+                #endif
+                return rawLightColor;
+        }
+
+
+        float4 VRSLGI_GetLightPositionData(int lightIndex)
+        {
+                #if _VRSL_GI_ANGLES
+                        float4 lightPos = _Udon_VRSL_GI_LightTexture.Load( int3(lightIndex, 1, 0) );
+                #else
+                        float4 lightPos = _Udon_VRSL_GI_LightTexture.Load( int3(lightIndex, 1, 0) );   
+                #endif
+                return lightPos;
+        }
+        #if _VRSL_GI_ANGLES
+            float4 VRSLGI_GetLightDirectionData(int lightIndex)
+            {
+            // #ifdef _VRSL_GLOBALLIGHTTEXTURE
+                    float4 rawLightDirection = _Udon_VRSL_GI_LightTexture.Load( int3(x, 3, 0) );    
+                //#else
+                //   float4 rawLightDirection = _VRSL_LightTexture.Load( int3(x, 3, 0) );    
+            //#endif
+                return rawLightDirection;
+            }
+        #endif
+
+        float VRSLGI_GGXSpec(float3 N, float3 V, float3 L, float roughness)
+        {
+            float alpha = roughness*roughness;
+
+            float3 H = normalize(V+L);
+
+            float dotNL = saturate(dot(N,L));
+            //float dotNV = saturate(dot(N,V));
+            float dotNH = saturate(dot(N,H));
+            float dotLH = saturate(dot(L,H));
+
+            float D, vis;
+
+            // D
+            float alphaSqr = alpha*alpha;
+            float pi = 3.14159f;
+            float denom = dotNH * dotNH *(alphaSqr-1.0) + 1.0f;
+            D = alphaSqr/(pi * denom * denom);
+
+            // V
+            float k = alpha/2.0f;
+            float k2 = k*k;
+            float invK2 = 1.0f-k2;
+            vis = rcp(dotLH*dotLH*invK2 + k2);
+
+            float specular = dotNL * D * vis;
+            return specular;
+        }
+
+    float3 GetVRSLGI(float3 albedo, float3 worldPos, float3 dirNormal, float3 vertNormal, float3 dirView, float occlussion, float roughnessMap, float specMask, float shadowMask, float3 poiLightMap, PoiMesh poiMesh)
+    {
+        float overallStrength = _VRSLGIStrength;
+        #if defined(POI_VRSLGI_TOON)
+                overallStrength *= 0.75;
+            	float shadowStrength = _VRSLGIShadowStrength * shadowMask;
+                float4 blurMap = 1;
+				float4 shadowColorTex = float4(1, 1, 1, 1);
+
+        #endif
+
+        int lightCount = VRSLGI_GetLightCountData();
+        half3 vrslgi = half3(0,0,0);
+        half3 vrslgiFinalSpec = half3(0,0,0);
+        
+        // vrslGISpec = half3(0,0,0);
+        float roughness         = lerp(abs(1-_VRSLGI_Smoothness), roughnessMap, _VRSLGI_SmoothnessMapBlend);
+        roughness               = max(roughness, 0.002);
+        [loop]
+        for (int x = 0; x < lightCount; x++)
+        {
+            half4 rawLightColor = VRSLGI_GetLightColorData(x);
+            half4 lightPos = VRSLGI_GetLightPositionData(x);
+            half3 lightColor = (rawLightColor.rgb * (0.5 * rawLightColor.a));
+            float range = distance(worldPos, lightPos.xyz);
+            float3 lightDirection = normalize(lightPos.xyz - worldPos);
+            range*= rawLightColor.a;
+            float falloff = 1.0 / (range * range);
+            float shadows = saturate(dot(lightDirection, dirNormal));
+
+
+            #if defined(POI_VRSLGI_TOON)
+                half3 vrslgiToon = half3(1,1,1);
+            	float4 lns = float4(1, 1, 1, 1);
+				
+				float3 lightMap = poiLightMap;
+				lightMap.x *= saturate(dot(lightDirection, vertNormal));
+				lns.x = poiEdgeNonLinearNoSaturate(lightMap.x, _VRSLGIShadowBorder, _VRSLGIShadowBlur * blurMap.r);
+				lns = saturate(lns);
+                vrslgiToon = lerp(half3(0,0,0), shadowColorTex.rgb, lns.x);
+
+            #else
+                shadows = clamp(shadows, _VRSLGIClampShadow, 1.0);
+            #endif
+
+                float vrslSpec = 1.0;
+                float3 vrslSpecWithColor = float3(0,0,0);
+                    #ifdef POI_VRSLGI_SPECULARHIGHLIGHTS
+                        vrslSpec = VRSLGI_GGXSpec(dirNormal, dirView, lightDirection, roughness);
+                        vrslSpecWithColor = (lightColor * vrslSpec) * saturate(falloff * shadows) * occlussion;
+                        vrslSpecWithColor *= 0.25;
+                        vrslSpecWithColor *= _VRSLGI_SpecularColor;
+                        vrslSpecWithColor = lerp(vrslSpecWithColor,(lerp(float3(0,0,0), vrslSpecWithColor, specMask)), _VRSLGI_SpecMapBlend);
+                        vrslgiFinalSpec += vrslSpecWithColor;
+                    #endif
+            #if defined(POI_VRSLGI_TOON)
+                    vrslgiToon = lerp(lightColor, vrslgiToon * lightColor, shadowStrength * shadowMask);
+                    vrslgi+= (((vrslgiToon * _VRSLGI_DiffuseColor) * falloff));
+            #else
+                vrslgi += (((lightColor * _VRSLGI_DiffuseColor) * falloff * shadows));
+            #endif
+        }
+        vrslgi = clamp(vrslgi, half3(0,0,0), half3(_VRSLGIDiffuseClampAmount, _VRSLGIDiffuseClampAmount, _VRSLGIDiffuseClampAmount));
+        vrslgi += (vrslgiFinalSpec * _VRSLSpecularMultiplier);
+        vrslgi = clamp(vrslgi, half3(0,0,0), half3(_VRSLGIHighlightClampAmount,_VRSLGIHighlightClampAmount,_VRSLGIHighlightClampAmount));
+        vrslgi *= _VRSLGIStrengthMultiplier;
+        vrslgi *= (overallStrength) * 0.5 * albedo;
+        vrslgi *= occlussion;
+       // vrslgi = clamp(vrslgi, half3(0,0,0), half3(3,3,3));
+        return vrslgi;
+    }
+    #endif
+#endif
+//endex
+#T#PoiVRSLGIFunctionCall
+//ifex _VRSLGIEnabled!=1
+#ifdef POI_VRSLGI
+    #ifdef UNITY_PASS_FORWARDBASE
+        if (_VRSLGI_AnimToggle)
+        {
+            float VRSLGIsmoothness = 1;
+            float VRSLGISpecMask = 1;
+            #ifdef POI_VRSLGI_SPECULARHIGHLIGHTS
+            if (_VRSLGI_SpecMapBlend || _VRSLGI_SmoothnessMapBlend)
+            {
+                #ifdef MOCHIE_PBR
+                float smoothness = _MochieRoughnessMultiplier;
+                float specularMask = 1;
+                float reflectionMask = 1;
+                
+                #if defined(PROP_MOCHIEMETALLICMAPS) || !defined(OPTIMIZER_ENABLED)
+                float4 PBRMaps = POI2D_SAMPLER_PAN_STOCHASTIC(_MochieMetallicMaps, _MainTex, poiUV(poiMesh.uv[_MochieMetallicMapsUV], _MochieMetallicMaps_ST), _MochieMetallicMapsPan, _MochieMetallicMapsStochastic);
+                UNITY_BRANCH
+                if (_PBRSplitMaskSample)
+                {
+                    float4 PBRSplitMask = POI2D_SAMPLER_PAN_STOCHASTIC(_MochieMetallicMaps, _MainTex, poiUV(poiMesh.uv[_MochieMetallicMasksUV], _PBRMaskScaleTiling), _MochieMetallicMasksPan.xy, _PBRSplitMaskStochastic);
+                    assignValueToVectorFromIndex(PBRMaps, _MochieMetallicMapsReflectionMaskChannel, PBRSplitMask[_MochieMetallicMapsReflectionMaskChannel]);
+                    assignValueToVectorFromIndex(PBRMaps, _MochieMetallicMapsSpecularMaskChannel, PBRSplitMask[_MochieMetallicMapsSpecularMaskChannel]);
+                }
+                if (_MochieMetallicMapsRoughnessChannel < 4)
+                {
+                    smoothness *= PBRMaps[_MochieMetallicMapsRoughnessChannel];
+                }
+                if (_MochieMetallicMapsSpecularMaskChannel < 4)
+                {
+                    specularMask *= PBRMaps[_MochieMetallicMapsSpecularMaskChannel];
+                }
+                #endif
+                VRSLGIsmoothness = smoothness;
+                VRSLGISpecMask = specularMask;
+                #endif
+            }
+            #endif
+            
+            float3 vrslgi = GetVRSLGI(poiFragData.baseColor.rgb, poiMesh.worldPos, poiMesh.normals[1], poiMesh.normals[0], normalize(poiCam.worldPos - poiMesh.worldPos), poiLight.occlusion, VRSLGIsmoothness,VRSLGISpecMask, poiLight.shadowMask, poiLight.lightMapNoAttenuation.xxx, poiMesh);
+            poiFragData.finalColor.rgb += (vrslgi);
+        }
+    #endif
+#endif
+//endex

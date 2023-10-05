@@ -1,0 +1,248 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: InvertedCube-GI-AvatarTesting
+  m_Shader: {fileID: 4800000, guid: 89a006117c4f63e48a1d00cb37797f54, type: 3}
+  m_ShaderKeywords: _VRSL_GI _VRSL_GLOBALLIGHTTEXTURE _VRSL_METAL_R _VRSL_MIX_MULT
+    _VRSL_SHADOWMASK_RGB _VRSL_SHADOWMASK_UV0 _VRSL_SPECFUNC_GGX _VRSL_SPEC_A
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 2000
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AreaLitMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _AreaLitOcclusion:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _AudioLinkEmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DMXEmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 20, y: 30}
+        m_Offset: {x: 0, y: 0.12}
+    - _LTCGI_amp:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LTCGI_mat:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LightMesh:
+        m_Texture: {fileID: 8400000, guid: e4a5cbbca57371a41b09df84477364b1, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LightTex0:
+        m_Texture: {fileID: 8600000, guid: 9a293fe149b52484c9eb34c3bb523139, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LightTex1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LightTex2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LightTex3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 20, y: 30}
+        m_Offset: {x: 0, y: 0.12}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OSCGridRenderTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OSCGridRenderTextureRAW:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OSCGridStrobeTimer:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SamplingTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VRSLMetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VRSLShadowMask1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VRSLShadowMask2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VRSLShadowMask3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VRSL_LightCounter:
+        m_Texture: {fileID: 8600000, guid: 9e9467e8be61c4a43b8d1bcc3ba4cee9, type: 2}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VRSL_LightTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _AreaLitRoughnessMult: 0.03
+    - _AreaLitStrength: 1
+    - _AreaLitToggle: 0
+    - _AudioLinkToggle: 0
+    - _Band: 0
+    - _BandMultiplier: 1
+    - _BumpScale: 1
+    - _Cull: 2
+    - _Cutoff: 0.5
+    - _DMXChannel: 0
+    - _DMXEmissionMapMix: 0
+    - _Delay: 0
+    - _DetailNormalMapScale: 1
+    - _DstBlend: 0
+    - _EnableAudioLink: 0
+    - _EnableColorChord: 0
+    - _EnableColorTextureSample: 0
+    - _EnableCompatibilityMode: 0
+    - _EnablePanMovement: 0
+    - _EnableStrobe: 0
+    - _EnableThemeColorSampling: 0
+    - _EnableTiltMovement: 0
+    - _EnableVerticalMode: 0
+    - _FinalIntensity: 1
+    - _FixtureBaseRotationY: 0
+    - _FixtureMaxIntensity: 1
+    - _FixtureRotationX: 0
+    - _GlobalIntensity: 1
+    - _GlobalIntensityBlend: 1
+    - _GlossMapScale: 1
+    - _Glossiness: 0
+    - _GlossyReflections: 1
+    - _IncludeDirectionAndSpotAngle: 0
+    - _LTCGI: 0
+    - _LTCGIStrength: 0.46
+    - _LTCGI_DIFFUSE_OFF: 0
+    - _LTCGI_SPECULAR_OFF: 0
+    - _MaxMinPanAngle: 180
+    - _MaxMinTiltAngle: 180
+    - _Metallic: 0
+    - _Mode: 0
+    - _NineUniverseMode: 0
+    - _NumBands: 4
+    - _OcclusionStrength: 1
+    - _OcclusionUVSet: 0
+    - _OpaqueLights: 1
+    - _PanInvert: 0
+    - _Parallax: 0.02
+    - _RenderTextureMultiplier: 1
+    - _ShadowMaskActiveChannels: 2
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _TextureColorSampleX: 0.5
+    - _TextureColorSampleY: 0.5
+    - _ThemeColorTarget: 0
+    - _ThirteenChannelMode: 0
+    - _TiltInvert: 0
+    - _UVSec: 0
+    - _UniversalIntensity: 1
+    - _UseGlobalVRSLLightTexture: 1
+    - _UseLegacyDMXTextures: 0
+    - _UseVRSLMetallicGlossMap: 0
+    - _UseVRSLShadowMask1: 0
+    - _UseVRSLShadowMask1AStrength: 1
+    - _UseVRSLShadowMask1BStrength: 1
+    - _UseVRSLShadowMask1GStrength: 1
+    - _UseVRSLShadowMask1RStrength: 1
+    - _UseVRSLShadowMask2: 0
+    - _UseVRSLShadowMask2AStrength: 1
+    - _UseVRSLShadowMask2BStrength: 1
+    - _UseVRSLShadowMask2GStrength: 1
+    - _UseVRSLShadowMask2RStrength: 1
+    - _UseVRSLShadowMask3: 0
+    - _UseVRSLShadowMask3AStrength: 1
+    - _UseVRSLShadowMask3BStrength: 1
+    - _UseVRSLShadowMask3GStrength: 1
+    - _UseVRSLShadowMask3RStrength: 1
+    - _VRSLDiffuseMix: 1
+    - _VRSLGIDiffuseClamp: 10000
+    - _VRSLGIDiffuseMode: 0
+    - _VRSLGISpecularClamp: 10000
+    - _VRSLGIStrength: 1
+    - _VRSLGlossMapStrength: 0
+    - _VRSLGlossiness: 0.3547
+    - _VRSLInvertMetallicMap: 0
+    - _VRSLInvertSmoothnessMap: 0
+    - _VRSLMetallicChannel: 0
+    - _VRSLMetallicMapStrength: 0
+    - _VRSLShadowMaskUVSet: 0
+    - _VRSLSmoothnessChannel: 3
+    - _VRSLSpecularFunction: 0
+    - _VRSLSpecularMultiplier: 10
+    - _VRSLSpecularShine: 0
+    - _VRSLSpecularStrength: 0.413
+    - _VRSLToggle: 0
+    - _ZWrite: 1
+    - useVRSLGI: 1
+    - useVRSLGISpecular: 0
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Emission: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
+    - _EmissionDMX: {r: 1, g: 1, b: 1, a: 1}
+    - _FixtureRotationOrigin: {r: 0, g: 0.014709, b: -1.02868, a: 0}

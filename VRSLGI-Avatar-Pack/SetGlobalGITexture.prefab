@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &9212717739201436125
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9212717739201436127}
+  - component: {fileID: 9212717739201436124}
+  m_Layer: 0
+  m_Name: SetGlobalGITexture
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9212717739201436127
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9212717739201436125}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9212717739201436124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9212717739201436125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf6629388927abc4b95a264ee23409be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetTextures:
+  - {fileID: 2800000, guid: ad8f46aeb3160c248817e0f1cdbae26e, type: 2}
+  - {fileID: 2800000, guid: abb0c8b4de4784648a2149b34916065a, type: 2}
+  - {fileID: 2800000, guid: 9e632691db7ee764fba85c05576ec96e, type: 2}
+  - {fileID: 2800000, guid: 884a5ac8ab25d0146af1b074e800cba5, type: 2}
+  - {fileID: 2800000, guid: ffe7cb572219c384a865448c9057b48f, type: 2}
+  - {fileID: 2800000, guid: 60814706774d4e14681c4fcdcf9f32d9, type: 2}
+  - {fileID: 2800000, guid: 3c9af25bcedc26c43969c4633c35f504, type: 2}
+  - {fileID: 2800000, guid: e73e6e19530f8d946b92156a94e2d4e6, type: 2}
+  - {fileID: 2800000, guid: fbd900959537bc64f8995bedbe812f8a, type: 2}
+  - {fileID: 2800000, guid: 4ba9f3871b8a27b4c9b90e487f50a728, type: 2}
+  - {fileID: 2800000, guid: cbc178a72052ce847bcad524476b49da, type: 2}
+  - {fileID: 2800000, guid: 7a285da6531e1fd44ab061fb35011118, type: 2}
+  - {fileID: 2800000, guid: 580fdeee989398a45ad2215b81c5d178, type: 2}
+  - {fileID: 2800000, guid: 64f6d575ce2b7d946abe7b54bacd2f3a, type: 2}
+  - {fileID: 2800000, guid: ab531a4f9b6c8ca4eacf1059991d417e, type: 2}
+  - {fileID: 2800000, guid: d631b66fd77e63c43bb0c5fa975cd4b5, type: 2}
+  - {fileID: 2800000, guid: 5588cef1c3d5ad342848351edb3f97d1, type: 2}
+  - {fileID: 2800000, guid: bfbfe663ad6a95e4b8a0daf0f0e8b020, type: 2}
+  offTexture2D: {fileID: 2800000, guid: 6ff5e2232ca60da4e9a895d1acb8c5bc, type: 2}

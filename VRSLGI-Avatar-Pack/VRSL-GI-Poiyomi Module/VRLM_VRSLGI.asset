@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1039f25740a92fc4292bb1d94d07ad19, type: 3}
+  m_Name: VRLM_VRSLGI
+  m_EditorClassIdentifier: 
+  Id: VRSLGI
+  Name: VRSLGI
+  Version: 1.0
+  Author: AcChosen
+  Description: 
+  EnableProperties: []
+  Properties: []
+  ModuleDependencies: []
+  IncompatibleWith: []
+  Templates:
+  - Template: {fileID: -3398434941509607698, guid: 7415e40fd0cdf3640884a44caeb0a3aa,
+      type: 3}
+    Keywords:
+    - LIGHTING_PROPERTIES
+    NeedsVariant: 0
+    Queue: 101
+  - Template: {fileID: 5323999027941137315, guid: 7415e40fd0cdf3640884a44caeb0a3aa,
+      type: 3}
+    Keywords:
+    - SHADER_KEYWORDS
+    NeedsVariant: 0
+    Queue: 100
+  - Template: {fileID: -8765966459578257005, guid: 7415e40fd0cdf3640884a44caeb0a3aa,
+      type: 3}
+    Keywords:
+    - BASE_PROPERTY_VARIABLES
+    NeedsVariant: 0
+    Queue: 100
+  - Template: {fileID: 566132211704364237, guid: 7415e40fd0cdf3640884a44caeb0a3aa,
+      type: 3}
+    Keywords:
+    - FRAGMENT_BASE_FUNCTIONS
+    NeedsVariant: 0
+    Queue: 100
+  - Template: {fileID: -4059204247704485523, guid: 7415e40fd0cdf3640884a44caeb0a3aa,
+      type: 3}
+    Keywords:
+    - FRAGMENT_BASE_LIGHTING
+    NeedsVariant: 0
+    Queue: 100
+  Functions: []
+  AdditionalSerializedData: 
