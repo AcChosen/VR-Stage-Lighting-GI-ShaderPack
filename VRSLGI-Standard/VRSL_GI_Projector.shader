@@ -1,7 +1,14 @@
 Shader "VRSL/GI-Addon/Standard Projector" {
 Properties {
 	[Enum(UnityEngine.Rendering.CullMode)] _Cull("Cull Mode", Int) = 2
-	[Enum(Equal,3,LessEqual,4)] _ZTest("ZTest", Int) = 3
+	[Enum(UnityEngine.Rendering.CompareFunction)] _ZTest("ZTest", Int) = 3
+	[Enum(UnityEngine.Rendering.CompareFunction)] _StencilComp("--Comparison", Int)     = 0
+	[Enum(UnityEngine.Rendering.StencilOp)] _StencilOp("--Pass", Int)                   = 0
+	[Enum(UnityEngine.Rendering.StencilOp)] _StencilFail("--Fail", Int)                 = 0
+	[Enum(UnityEngine.Rendering.StencilOp)] _StencilZFail("--Fail", Int)                 = 0
+
+
+
 	[Enum(GGX,0,Beckman,1,Blinn Phong,2)] _VRSLSpecularFunction ("VRSL Specular Function", Int) = 0
 
 
@@ -96,7 +103,7 @@ Properties {
 	[HideInInspector] _Mode ("__mode", Float) = 0.0
 	// [HideInInspector] _SrcBlend ("__src", Float) = 1.0
 	// [HideInInspector] _DstBlend ("__dst", Float) = 0.0
-	// [HideInInspector] _ZWrite ("__zw", Float) = 1.0
+	[Enum(Off,0,On,1)] _ZWrite ("_ZWrite", Int) = 0
 
 	_GlobalIntensityBlend("Global Intensity Blend", Range(0,1)) = 1
 }
@@ -109,15 +116,18 @@ SubShader {
 		Stencil
 		{
 			Ref 148
-			Comp NotEqual
-			Pass Keep
+			Comp [_StencilComp]
+			Pass [_StencilOp]
+			Fail [_StencilFail]
+			ZFail [_StencilZFail]
 		}
 	Pass {
 		Name "FORWARD"
 		Tags { "LightMode"="ForwardBase" }
 		Cull [_Cull]
 		Blend DstColor OneMinusSrcAlpha, Zero One
-		ZTest [_ZTest] ZWrite Off
+		ZTest [_ZTest] 
+		ZWrite [_ZWrite] 
 		CGPROGRAM
 		#pragma target 5.0
 		#define VRSL_GI_PROJECTOR

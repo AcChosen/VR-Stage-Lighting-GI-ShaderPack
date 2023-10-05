@@ -205,6 +205,14 @@ Shader "VRSL/GI-Addon/Standard Shader"
             Blend [_SrcBlend] [_DstBlend]
             ZWrite [_ZWrite]
 
+            Stencil
+            {
+                Ref 148
+                Comp Always
+                Pass Replace
+                Fail Keep
+            }
+
             CGPROGRAM
            // #pragma enable_d3d11_debug_symbols
             #pragma target 5.0
