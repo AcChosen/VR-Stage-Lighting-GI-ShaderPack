@@ -220,7 +220,7 @@ PrefabInstance:
     - target: {fileID: 9212717739201436127, guid: 55e7447fd59f1ce4ebf8ad38df642666,
         type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9212717739201436127, guid: 55e7447fd59f1ce4ebf8ad38df642666,
         type: 3}
@@ -306,90 +306,75 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &757142213
+--- !u!1001 &552996869
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 158692506467960480, guid: 31a92c4dcb3b96045ab1f3bc2f43f15f,
+    - target: {fileID: 158692506467960480, guid: f4331a03224b9a644a17cd32f24b5950,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 158692506467960480, guid: 31a92c4dcb3b96045ab1f3bc2f43f15f,
+    - target: {fileID: 158692506467960480, guid: f4331a03224b9a644a17cd32f24b5950,
         type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 158692506467960480, guid: 31a92c4dcb3b96045ab1f3bc2f43f15f,
+    - target: {fileID: 158692506467960480, guid: f4331a03224b9a644a17cd32f24b5950,
         type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 158692506467960480, guid: 31a92c4dcb3b96045ab1f3bc2f43f15f,
+    - target: {fileID: 158692506467960480, guid: f4331a03224b9a644a17cd32f24b5950,
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 158692506467960480, guid: 31a92c4dcb3b96045ab1f3bc2f43f15f,
+    - target: {fileID: 158692506467960480, guid: f4331a03224b9a644a17cd32f24b5950,
         type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 158692506467960480, guid: 31a92c4dcb3b96045ab1f3bc2f43f15f,
+    - target: {fileID: 158692506467960480, guid: f4331a03224b9a644a17cd32f24b5950,
         type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 158692506467960480, guid: 31a92c4dcb3b96045ab1f3bc2f43f15f,
+    - target: {fileID: 158692506467960480, guid: f4331a03224b9a644a17cd32f24b5950,
         type: 3}
       propertyPath: m_LocalRotation.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 158692506467960480, guid: 31a92c4dcb3b96045ab1f3bc2f43f15f,
+    - target: {fileID: 158692506467960480, guid: f4331a03224b9a644a17cd32f24b5950,
         type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 158692506467960480, guid: 31a92c4dcb3b96045ab1f3bc2f43f15f,
+    - target: {fileID: 158692506467960480, guid: f4331a03224b9a644a17cd32f24b5950,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 158692506467960480, guid: 31a92c4dcb3b96045ab1f3bc2f43f15f,
+    - target: {fileID: 158692506467960480, guid: f4331a03224b9a644a17cd32f24b5950,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 158692506467960480, guid: 31a92c4dcb3b96045ab1f3bc2f43f15f,
+    - target: {fileID: 158692506467960480, guid: f4331a03224b9a644a17cd32f24b5950,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 158692506467960481, guid: 31a92c4dcb3b96045ab1f3bc2f43f15f,
-        type: 3}
-      propertyPath: m_FarClipPlane
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 158692506467960481, guid: 31a92c4dcb3b96045ab1f3bc2f43f15f,
-        type: 3}
-      propertyPath: m_NearClipPlane
-      value: -100
-      objectReference: {fileID: 0}
-    - target: {fileID: 158692506467960481, guid: 31a92c4dcb3b96045ab1f3bc2f43f15f,
-        type: 3}
-      propertyPath: m_OrthographicSize
-      value: 70.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 158692506467960483, guid: 31a92c4dcb3b96045ab1f3bc2f43f15f,
+    - target: {fileID: 158692506467960483, guid: f4331a03224b9a644a17cd32f24b5950,
         type: 3}
       propertyPath: m_Name
       value: VRSL GI Avatar Projector-NoSpecular
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 31a92c4dcb3b96045ab1f3bc2f43f15f, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: f4331a03224b9a644a17cd32f24b5950, type: 3}
 --- !u!1 &1365205330
 GameObject:
   m_ObjectHideFlags: 0

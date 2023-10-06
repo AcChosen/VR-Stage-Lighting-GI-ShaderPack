@@ -211,6 +211,7 @@ Shader "VRSL/GI-Addon/Standard Shader"
                 Comp Always
                 Pass Replace
                 Fail Keep
+                ZFail Keep
             }
 
             CGPROGRAM
