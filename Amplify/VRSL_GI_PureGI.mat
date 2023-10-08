@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: VRSL_GI_PureGI
+  m_Shader: {fileID: 4800000, guid: 09e6070ae2d728249964b95405eddadc, type: 3}
+  m_ShaderKeywords: _DIFFUSETYPE_REALISTIC _DIFFUSETYPE__VRSL_DIFFUSETINT _VRLSGISHADOWMASKCHANNEL_R
+    _VRSLGIDIFFUSETYPE_REALISTIC _VRSLGIENABLESPECULAR_ON _VRSLGIGLOBALLIGHTTEXTURE_ON
+    _VRSLGISHADOWMASK1_ON _VRSLGISPECULARTYPE_GGX
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _VRSLShadowMask1:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VRSLShadowMask2:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VRSLShadowMask3:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _VRSL_LightTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _DiffuseType: 0
+    - _GISpecularMultiply: 0
+    - _GISpecularStrength: 1
+    - _GIStrength: 100
+    - _Metallic: 0.198
+    - _Roughness: 0.657
+    - _SpecularMultiply: 1
+    - _SpecularStrength: 1
+    - _SpecularType: 0
+    - _UseVRSLShadowMask1AStrength: 0
+    - _UseVRSLShadowMask1BStrength: 0
+    - _UseVRSLShadowMask1GStrength: 0
+    - _UseVRSLShadowMask1RStrength: 1
+    - _UseVRSLShadowMask2AStrength: 0
+    - _UseVRSLShadowMask2BStrength: 0
+    - _UseVRSLShadowMask2GStrength: 0
+    - _UseVRSLShadowMask2RStrength: 0
+    - _UseVRSLShadowMask3AStrength: 0
+    - _UseVRSLShadowMask3BStrength: 0
+    - _UseVRSLShadowMask3GStrength: 0
+    - _UseVRSLShadowMask3RStrength: 0
+    - _VRLSGIShadowMaskChannel: 0
+    - _VRSLGIDiffuseType: 0
+    - _VRSLGIEnableDirectionalSpotLights: 0
+    - _VRSLGIEnableSpecular: 1
+    - _VRSLGIGlobalLightTexture: 1
+    - _VRSLGIShadowMask1: 1
+    - _VRSLGIShadowMask2: 0
+    - _VRSLGIShadowMask3: 0
+    - _VRSLGIShadowMaskUV: 0
+    - _VRSLGISpecularType: 0
+    - _VRSLGIStrength: 10
+    - _VRSLGIVertexAttenuation: 1
+    - _VRSLGIVertexFalloff: 1
+    - _VRSLGlossMapStrength: 1
+    - _VRSLInvertMetallicMap: 0
+    - _VRSLInvertSmoothnessMap: 0
+    - _VRSLMetallicChannel: 1
+    - _VRSLMetallicMapStrength: 1
+    - _VRSLSmoothnessChannel: 1
+    - _VRSLSpecularMultiplier: 1
+    m_Colors:
+    - _AlbedoColor: {r: 1, g: 1, b: 1, a: 0}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 0}
+    - _DiffuseColor: {r: 1, g: 1, b: 1, a: 0}

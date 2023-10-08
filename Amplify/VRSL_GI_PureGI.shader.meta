@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: 09e6070ae2d728249964b95405eddadc
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures:
+  - _VRSL_LightTexture: {fileID: 8600000, guid: 9e9467e8be61c4a43b8d1bcc3ba4cee9,
+      type: 2}
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

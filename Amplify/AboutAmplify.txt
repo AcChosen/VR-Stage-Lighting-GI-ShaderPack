@@ -1,0 +1,11 @@
+The amplify functions are all in the VRSL_GI_Function_GetGI amplify function. That function has most of the pipeline split into nodes, mostly custom expression nodes. 
+You can grab those custom expression nodes and copy and paste them into your shaders, or look at the "VRSL_GI_PureGI" example shader. That shader outputs nothing but the VRSL GI end pixel color.
+
+The "Get GI" function has 6 inputs: Roughness, Metallic, World Position, World Normals Albedo Color, and Ambient Occlusion.
+
+Roughness = Roughness
+Metallic = Metallic
+World Position = The world space position of the current pixel. This input already is grabbing the proper defaults, so there's no need to use it unless you are doing vertex transformations.
+World Normals = The world space vertex normals. This input is already grabbing the proper defaults, so there's no need to use it unless you are doing vertex transformations.
+Albedo Color = The Diffuse/Base/Albedo Color of the shader.
+Ambient Occlusion = Ambient Occlusion. Default value is 1.

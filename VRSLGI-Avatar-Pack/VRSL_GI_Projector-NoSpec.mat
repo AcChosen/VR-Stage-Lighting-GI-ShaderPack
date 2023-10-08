@@ -138,7 +138,7 @@ Material:
     - _VRSLGIFalloff: 2
     - _VRSLGIQuadLightingSystem: 0
     - _VRSLGISpecularClamp: 10000
-    - _VRSLGIStrength: 5
+    - _VRSLGIStrength: 1
     - _VRSLGIVertexAttenuation: 1
     - _VRSLGIVertexFalloff: 2
     - _VRSLGlossiness: 0.492

@@ -83,10 +83,6 @@ half        _VRSLProjectorStrength;
 #if _VRSL_GI_SPECULARHIGHLIGHTS
 // Upgrade NOTE: excluded shader from DX11, OpenGL ES 2.0 because it uses unsized arrays
 #pragma exclude_renderers d3d11 gles
-    // float G1V(float dotNV, float k)
-    // {
-    //     return 1.0f/(dotNV*(1.0f-k)+k);
-    // }
 
     
 
@@ -169,63 +165,6 @@ float AngleBetweenVecotrs(float3 v1, float3 v2)
 {
     return dot(v1, v2) / (length(v1) * length(v2));
 }
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // uint Four8BitTo32Bit(uint4 input)
-    // {
-    //     uint output = (input.x) << 24 | (input.y) << 16 | (input.z) << 8 | (input.w);
-    //     return output;
-    // }
-    // uint4 One32BitToFour8Bits(uint input)
-    // {
-    //     uint4 output = uint4(0,0,0,0);
-    //     output.x = (input & 0xFF000000) >> 24;
-    //     output.y = (input & 0x00ff0000) >> 16;
-    //     output.z = (input & 0x0000ff00) >> 8;
-    //     output.w = input & 0x000000ff;
-    //     return output; 
-    // }
-
-    // uint PackTwoHalves(half2 input)
-    // {
-    //         uint a = f32tof16(input.x);
-    //         uint b = f32tof16(input.y);
-    //         uint result;
-    //         return result = b << 16 | a;
-
-    // }
-
-    // half2 UnPackTwoHalves(uint input)
-    // {
-
-    //         half a = f16tof32(input);
-    //         half b = f16tof32(input >> 16);
-    //         return half2(a,b);
-
-    // }
-//     void UnPackPositionAndColor(float4 input, out float4 position, out float4 color)
-//     {
-//         half2 xIn = UnPackTwoHalves(input.x,4096 );
-//         half2 yIn = UnPackTwoHalves(input.y,4096 );
-//         half2 zIn = UnPackTwoHalves(input.z,4096 );
-//         half2 wIn = UnPackTwoHalves(input.w,4096 );
-//         color = float4(xIn.x, yIn.x, zIn.x, wIn.x);
-//         position = float4(xIn.y, yIn.y, zIn.y, wIn.y);
-//         return; 
-//     }
-
-//     float4 PackPositionAndColor(half4 col, half4 pos)
-//     {
-//         //half4 col = _VRSL_LightTexture.Load( int3(index, 0, 0) ); 
-//         //half4 pos = _VRSL_LightTexture.Load( int3(index, 1, 0) );
-//         float4 output = 
-//         float4(PackTwoHalves(half2(col.x,pos.x),4096 ),
-//         PackTwoHalves(half2(col.y,pos.y),4096 ),
-//         PackTwoHalves(half2(col.z,pos.z),4096 ),
-//         PackTwoHalves(half2(col.w,pos.w),4096 ));
-//         return output;
-//     }
     #if defined(_VRSL_GI_ENFORCELIMIT)
     struct VRSLVertLightData
     {
@@ -271,9 +210,6 @@ float AngleBetweenVecotrs(float3 v1, float3 v2)
     int lightCount)
     {
         float3 viewDirection = normalize(eyeVec.xyz);
-
-
-
         #if _VRSL_GI_SPECULARHIGHLIGHTS
             float metallic = _VRSLSpecularStrength;
             #ifndef VRSL_GI_PROJECTOR
@@ -287,24 +223,14 @@ float AngleBetweenVecotrs(float3 v1, float3 v2)
         [unroll(4)]
         for (int index = 0; index < lightCount; index++)
         {
-            // ld.vPosition[index] = float3(quadLightX[index], quadLightY[index], quadLightZ[index]);
-            
-            //#if _VRSL_GI_ANGLES
 
-                float4 rawLightColor = ld.colors[index];
-                
-            //#else
-           //     float4 rawLightColor = ld.colors[index];
-         //   #endif
+            float4 rawLightColor = ld.colors[index];
 
             float3 lightColor = rawLightColor.rgb * (0.5 * rawLightColor.a);
 
-
             float4 lightPos = ld.positions[index];
 
-
             float specular = 1.0;
-            
             
             float range = distance(worldPos, lightPos.xyz);
             float3 lightDirection = normalize(lightPos.xyz - worldPos);
@@ -336,44 +262,31 @@ float AngleBetweenVecotrs(float3 v1, float3 v2)
 
                 specular *= (1/(range*0.5));
             #endif
-            //End SPecular Stuff
-            // float dotProduct = saturate(dot(ld.vDirection[index], fragNormal) );
-            
+
             lightColor = lightColor * ((_VRSLGIStrength));
             diffuseColor = lerp(float3(1,1,1), diffuseColor, _VRSLDiffuseMix);
 
             #if _VRSL_GI_ANGLES
-                // if(lightPos.w > 180)
-                // {
+
                     float4 rawLightDirection = ld.directions[index];
                     float3 spotlightDir = rawLightDirection.xyz;
                     //float angle = trunc(rawLightDirection.w) - 1000;
                     float angle = (floor(rawLightDirection.w - 1)) / 255;
                     angle = angle * 180.0;
-                   // float blend = frac(rawLightDirection.w);
-                    // EightBitUnpack(rawLightDirection.w, blend, angle);
-                    
-                    //float blend = abs(rawLightDirection.w - 1000);
-                    //blend = frac(blend) * 10000;
                     float theta = dot(lightDirection, normalize(-spotlightDir));
                     float outerCone = cos(radians(angle));
                     float spotlight = clamp(theta - outerCone,0.0,1.0);
-                // spotlight = lerp(1.0,spotlight, angle > -0.0001);
-                    // atten = lerp(atten, atten*spotlight, blend);
-                    // specular = lerp(specular, specular*spotlight, blend);
+
                     atten = atten*spotlight;
                     specular = specular*spotlight;
-                    // diffuseColor = rawLightDirection;
-              //  }
-             //  }
+
             #endif
             #ifdef VRSL_GI_PROJECTOR
                 lightColor = clamp(lightColor, float3(0,0,0), float3(_VRSLGIDiffuseClamp, _VRSLGIDiffuseClamp, _VRSLGIDiffuseClamp));
             #endif
 
             vertexLighting += falloff * lightColor * atten * diffuseColor * clamp(specular, 0.0, _VRSLGISpecularClamp);
-            // diffuseColor = lerp(float3(1,1,1), diffuseColor, _VRSLDiffuseMix);
-            // vertexLighting += ld.vColor[index] * specular * diffuseColor * falloff * dotProduct;
+
         }
         return vertexLighting;
     }
@@ -450,56 +363,23 @@ float AngleBetweenVecotrs(float3 v1, float3 v2)
                 break;
             #if defined(_VRSL_SHADOWMASK1)
             case 1:
-                // [branch]
-                // s1 = shadowMask1[maskChannel];
-                // [branch]
-                // s1Strength = mask1Strength[maskChannel];
                 SetShadowMaskChannel(maskChannel,s1,s1Strength,shadowMask1,mask1Strength);
-                // ChooseChannel(shadowMask1, s1Strength, s1,maskChannel, rStrength.y, gStrength.y, bStrength.y, aStrength.y);
                 break;
             #endif
             #if defined(_VRSL_SHADOWMASK2)
             case 2:
-                // [branch]
-                // s1 = shadowMask2[maskChannel];
-                // [branch]
-                // s1Strength = mask2Strength[maskChannel];
                 SetShadowMaskChannel(maskChannel,s1,s1Strength,shadowMask2,mask2Strength);
-                // ChooseChannel(shadowMask2, s1Strength, s1,maskChannel, rStrength.z, gStrength.z, bStrength.z, aStrength.z);
                 break;
             #endif
             #if defined(_VRSL_SHADOWMASK3)
             case 3:
-                // [branch]
-                // s1 = shadowMask3[maskChannel];
-                // [branch]
-                // s1Strength = mask3Strength[maskChannel];
                 SetShadowMaskChannel(maskChannel,s1,s1Strength,shadowMask3,mask3Strength);
-                // ChooseChannel(shadowMask3, s1Strength, s1,maskChannel, rStrength.w, gStrength.w, bStrength.w, aStrength.w);
                 break;  
             #endif              
         }
 
-        // float4 mask[4] = {float4(0,0,0,1),shadowMask1, shadowMask2, shadowMask3};
-        
-        // float4 m = mask[maskSelection];
-        // 
-
-        // s1Strength = rgba[maskChannel];
-        // s1 = m[maskChannel];
-
         return lerp(1,s1,s1Strength);
     }
-
-    // float CalcLuminance(float3 color)       
-    // {
-    //     return saturate((color.x * color.y * color.z)/3.0);
-    // }
-    // void EightBitUnpack( in float c, inout float a, inout float b )
-    // {
-    //     a = floor(c) / 255; // removes the fractional value and scales back to 0-1
-    //     b = frac(c); // removes the integer value, leaving B (0-1)
-    // }
 
     float3 VRSLGI(float3 worldPos, float3 worldNormal, float roughness, float3 eyeVec, float3 diffuseColor, float2 mg, float2 uv, float occlusion)
     {
@@ -519,8 +399,6 @@ float AngleBetweenVecotrs(float3 v1, float3 v2)
                 shadowmask3 = VRSLShadowMask3(uv);
             #endif
         #endif
-        //float3 viewDirection =  (worldPos - _WorldSpaceCameraPos);
-        //float3 normalDirection = normalize(i.normalDir.xyz);
         #ifndef VRLSGI_USE_BUILTIN_SPECULAR
             #if _VRSL_GI_SPECULARHIGHLIGHTS
                 float metallic = _VRSLSpecularStrength;
@@ -545,19 +423,11 @@ float AngleBetweenVecotrs(float3 v1, float3 v2)
 
 
         
-       // uniform int iterations = _Udon_VRSL_GI_LightCount;
-
-        //int lightCount = _Udon_VRSL_GI_LightCount;
         #ifdef _VRSL_GLOBALLIGHTTEXTURE
             int lightCount = _Udon_VRSL_GI_LightTexture.Load( int3(0, 2, 0) );
         #else
             int lightCount = _VRSL_LightTexture.Load( int3(0, 2, 0) );
         #endif
-
-        // int lightCount = _Udon_VRSL_GI_ActiveLights;
-
-        // float4 colors[32] = _Udon_VRSL_GI_LightColorArray;
-        // float4 positions[32] = _Udon_VRSL_GI_LightPosArray;
 
 
         [loop]
@@ -569,32 +439,20 @@ float AngleBetweenVecotrs(float3 v1, float3 v2)
 
             #if _VRSL_GI_ANGLES
                 #ifdef _VRSL_GLOBALLIGHTTEXTURE
-                    //float4 rawLightColorAndDirection = _Udon_VRSL_GI_LightTexture.Load( int3(x, 0, 0) );   
-                    
                     float4 rawLightColor = _Udon_VRSL_GI_LightTexture.Load( int3(x, 0, 0) );
-                     
                     float4 lightPos = _Udon_VRSL_GI_LightTexture.Load( int3(x, 1, 0) );
-                 //   float4 wwww = _Udon_VRSL_GI_LightTexture.Load( int3(x, 0, 0) );  
-                #else
-                    //float4 rawLightColorAndDirection = _VRSL_LightTexture.Load( int3(x, 0, 0) );   
-                    
+                #else 
                     float4 rawLightColor = _VRSL_LightTexture.Load( int3(x, 0, 0) );
- 
                     float4 lightPos = _VRSL_LightTexture.Load( int3(x, 1, 0) );
-                  //  float4 wwww = _VRSL_LightTexture.Load( int3(x, 0, 0) );  
                 #endif
                 float isSpotlight = lightPos.w;
             #else
                 #ifdef _VRSL_GLOBALLIGHTTEXTURE
                     float4 rawLightColor = _Udon_VRSL_GI_LightTexture.Load( int3(x, 0, 0) );   
                     float4 lightPos = _Udon_VRSL_GI_LightTexture.Load( int3(x, 1, 0) );
-
-                    //float4 wwww = _Udon_VRSL_GI_LightTexture.Load( int3(x, 0, 0) );
                 #else
                     float4 rawLightColor = _VRSL_LightTexture.Load( int3(x, 0, 0) );   
                     float4 lightPos = _VRSL_LightTexture.Load( int3(x, 1, 0) );
-
-                   // float4 wwww = _VRSL_LightTexture.Load( int3(x, 0, 0) );  
                 #endif
             #endif
 
@@ -603,7 +461,7 @@ float AngleBetweenVecotrs(float3 v1, float3 v2)
             
             
             
-            
+            //Begin Diffuse Stuff
             float range = distance(worldPos, lightPos.xyz);
             float3 lightDirection = normalize(lightPos.xyz - worldPos);
             #if _VRSL_DIFFUSETOON
@@ -614,8 +472,7 @@ float AngleBetweenVecotrs(float3 v1, float3 v2)
                 float atten = 1.0f;
             #else
                 float atten = saturate(dot(lightDirection, worldNormal) );
-            #endif
-            //float range = lightDist / 1.0;
+            #endif        
             range*= rawLightColor.a;
             float falloff = 1.0 / (range * range);
             //End Diffuse Stuff
@@ -670,23 +527,15 @@ float AngleBetweenVecotrs(float3 v1, float3 v2)
                         float4 rawLightDirection = _VRSL_LightTexture.Load( int3(x, 3, 0) );    
                     #endif
                     float3 spotlightDir = rawLightDirection.xyz;
-                    //float angle = trunc(rawLightDirection.w) - 1000;
                     float angle = (floor(rawLightDirection.w - 1)) / 255;
                     float blend = frac(rawLightDirection.w);
-                    // EightBitUnpack(rawLightDirection.w, blend, angle);
                     angle = angle * 180.0;
-                    //float blend = abs(rawLightDirection.w - 1000);
-                    //blend = frac(blend) * 10000;
+
                     float theta = dot(lightDirection, normalize(-spotlightDir));
                     float outerCone = cos(radians(angle));
                     float spotlight = clamp(theta - outerCone,0.0,1.0);
-                // spotlight = lerp(1.0,spotlight, angle > -0.0001);
                     atten = lerp(atten, atten*spotlight, blend);
                     specular = lerp(specular, specular*spotlight, blend);
-                    //  atten = atten*spotlight;
-                    //  specular = specular*spotlight;
-                    //atten *= blend;
-                    //return blend;
                }
             #endif
 
