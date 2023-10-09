@@ -34,7 +34,11 @@ _VRSLGIDiffuseClampAmount("VRSL GI Diffuse Clamp Amount", Range(1.0, 10.0)) = 2.
 // [ToggleUI] _VRSLGI_UsePBR ("Use R&S's Smoothness", Int) = 1
 [ToggleUI]_VRSLGI_SmoothnessMapBlend ("Use Smoothness Map--{condition_showS:(_VRSLGI_UseSpecular==1)}", Int) = 1
 _VRSLGI_Smoothness ("Smoothness--{condition_showS:(_VRSLGI_UseSpecular==1) && (_VRSLGI_SmoothnessMapBlend==0)}", Range(0, 1)) = 0.0
-[ToggleUI]_VRSLGI_SpecMapBlend ("Use Specular Mask--{condition_showS:(_VRSLGI_UseSpecular==1)}", Int) = 1   
+[ToggleUI]_VRSLGI_InvertSmoothness ("Invert Smoothness Map--{condition_showS:(_VRSLGI_UseSpecular==1)}", Int) = 0   
+
+[ToggleUI]_VRSLGI_SpecMapBlend ("Use Specular Mask--{condition_showS:(_VRSLGI_UseSpecular==1)}", Int) = 1
+[ToggleUI]_VRSLGI_InvertSpecMap ("Invert Specular Map--{condition_showS:(_VRSLGI_UseSpecular==1)}", Int) = 0
+
 _VRSLSpecularMultiplier("Specular Multiplier--{condition_showS:(_VRSLGI_UseSpecular==1)}", Range(0.01, 20)) = 1.0
 
 [Space(15)]
@@ -71,6 +75,8 @@ _VRSLGIHighlightClampAmount("VRSL GI Overall Clamp Amount", Range(1.0, 10.0)) = 
     float _VRSLGIClampShadow;
     float _VRSLGIHighlightClampAmount;
     float _VRSLGIDiffuseClampAmount;
+    int _VRSLGI_InvertSmoothness;
+    int _VRSLGI_InvertSpecMap;
 
    // float4 _VRSLGIShadowColor;
     float _VRSLGIShadowBorder;
@@ -264,6 +270,9 @@ _VRSLGIHighlightClampAmount("VRSL GI Overall Clamp Amount", Range(1.0, 10.0)) = 
                 #endif
             }
             #endif
+
+            VRSLGIsmoothness = abs(_VRSLGI_InvertSmoothness - VRSLGIsmoothness);
+            VRSLGISpecMask = abs(_VRSLGI_InvertSpecMap - VRSLGISpecMask);
             
             float3 vrslgi = GetVRSLGI(poiFragData.baseColor.rgb, poiMesh.worldPos, poiMesh.normals[1], poiMesh.normals[0], normalize(poiCam.worldPos - poiMesh.worldPos), poiLight.occlusion, VRSLGIsmoothness,VRSLGISpecMask, poiLight.shadowMask, poiLight.lightMapNoAttenuation.xxx, poiMesh);
             poiFragData.finalColor.rgb += (vrslgi);
